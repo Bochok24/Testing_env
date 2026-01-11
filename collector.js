@@ -178,6 +178,11 @@
         setTimeout(() => {
             DOM.map.invalidateSize();
         }, 100);
+
+        // Also invalidate on window resize/orientation change
+        window.addEventListener('resize', () => {
+            setTimeout(() => DOM.map.invalidateSize(), 100);
+        });
     }
 
     // =============================================
@@ -380,8 +385,9 @@
             draggable: true
         }).addTo(DOM.map);
 
-        // Update marker position on drag with boundary check
-        AppState.tempMarker.on('drag', function(event) {
+        // Update marker position on drag end with boundary check
+        // Using 'dragend' instead of 'drag' to prevent jittery behavior on mobile
+        AppState.tempMarker.on('dragend', function(event) {
             const newLatLng = event.target.getLatLng();
             const newDistance = targetLatLng.distanceTo(newLatLng);
             
@@ -396,9 +402,16 @@
                 
                 event.target.setLatLng([constrainedLat, constrainedLng]);
                 AppState.tempLatLng = L.latLng(constrainedLat, constrainedLng);
+                showToast('Marker constrained to boundary', 'info');
             } else {
                 AppState.tempLatLng = newLatLng;
             }
+        });
+
+        // Allow smooth dragging without continuous constraint checks
+        AppState.tempMarker.on('drag', function(event) {
+            // Just update the stored position during drag
+            AppState.tempLatLng = event.target.getLatLng();
         });
 
         // Enable submit button

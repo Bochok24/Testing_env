@@ -74,9 +74,11 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
-    /* Safe area for notched devices - apply here instead of body */
-    padding-top: env(safe-area-inset-top);
+    /* Height auto-expands with safe-area padding */
+    min-height: 56px;
+    /* Safe area for notched devices */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
     background: var(--primary-gradient);
@@ -87,6 +89,8 @@ body {
     z-index: 1000;
     box-shadow: var(--shadow-lg), var(--shadow-glow);
     backdrop-filter: blur(20px);
+    /* Explicitly set box-sizing */
+    box-sizing: content-box;
 }
 
 .app-title {
