@@ -172,6 +172,12 @@
 
         // Map click handler
         DOM.map.on('click', handleMapClick);
+
+        // Invalidate size after a short delay to ensure proper coordinate calculation
+        // This is crucial for mobile devices with safe-area insets
+        setTimeout(() => {
+            DOM.map.invalidateSize();
+        }, 100);
     }
 
     // =============================================
