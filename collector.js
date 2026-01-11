@@ -92,35 +92,22 @@
     };
 
     // =============================================
-    // Custom Marker Icons (Using inline SVG for mobile compatibility)
+    // Custom Marker Icons (Using L.icon with data URI for reliable mobile positioning)
     // =============================================
+    
+    // SVG as data URI - bypasses CSS positioning issues entirely
+    const tempMarkerSvg = encodeURIComponent(`<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="12" fill="#6366f1" stroke="white" stroke-width="3"/><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(99,102,241,0.4)" stroke-width="2"/></svg>`);
+    
+    const submittedMarkerSvg = encodeURIComponent(`<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" fill="#10b981" stroke="white" stroke-width="2"/></svg>`);
+    
     const MarkerIcons = {
-        temp: L.divIcon({
-            className: 'custom-marker-wrapper',
-            html: `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="12" fill="url(#tempGrad)" stroke="white" stroke-width="3"/>
-                <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(99,102,241,0.4)" stroke-width="6" class="pulse-ring"/>
-                <defs>
-                    <linearGradient id="tempGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#6366f1"/>
-                        <stop offset="100%" style="stop-color:#4f46e5"/>
-                    </linearGradient>
-                </defs>
-            </svg>`,
+        temp: L.icon({
+            iconUrl: `data:image/svg+xml,${tempMarkerSvg}`,
             iconSize: [32, 32],
             iconAnchor: [16, 16]
         }),
-        submitted: L.divIcon({
-            className: 'custom-marker-wrapper',
-            html: `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="10" cy="10" r="7" fill="url(#submitGrad)" stroke="white" stroke-width="2"/>
-                <defs>
-                    <linearGradient id="submitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#10b981"/>
-                        <stop offset="100%" style="stop-color:#059669"/>
-                    </linearGradient>
-                </defs>
-            </svg>`,
+        submitted: L.icon({
+            iconUrl: `data:image/svg+xml,${submittedMarkerSvg}`,
             iconSize: [20, 20],
             iconAnchor: [10, 10]
         })
