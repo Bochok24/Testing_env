@@ -92,18 +92,37 @@
     };
 
     // =============================================
-    // Custom Marker Icons
+    // Custom Marker Icons (Using inline SVG for mobile compatibility)
     // =============================================
     const MarkerIcons = {
         temp: L.divIcon({
-            className: 'temp-marker',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
+            className: 'custom-marker-wrapper',
+            html: `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" fill="url(#tempGrad)" stroke="white" stroke-width="3"/>
+                <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(99,102,241,0.4)" stroke-width="6" class="pulse-ring"/>
+                <defs>
+                    <linearGradient id="tempGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1"/>
+                        <stop offset="100%" style="stop-color:#4f46e5"/>
+                    </linearGradient>
+                </defs>
+            </svg>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
         }),
         submitted: L.divIcon({
-            className: 'submitted-marker',
-            iconSize: [18, 18],
-            iconAnchor: [9, 9]
+            className: 'custom-marker-wrapper',
+            html: `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="7" fill="url(#submitGrad)" stroke="white" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="submitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#059669"/>
+                    </linearGradient>
+                </defs>
+            </svg>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
         })
     };
 

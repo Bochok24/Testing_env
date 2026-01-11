@@ -896,8 +896,38 @@ body {
 }
 
 /* =============================================
-   Custom Markers
+   Custom Markers (SVG-based for mobile compatibility)
    ============================================= */
+.custom-marker-wrapper {
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.custom-marker-wrapper svg {
+    display: block !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) !important;
+}
+
+.custom-marker-wrapper .pulse-ring {
+    animation: svgPulse 1.5s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes svgPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        r: 12;
+    }
+    50% { 
+        opacity: 0.3;
+        r: 15;
+    }
+}
+
+/* Legacy marker classes (fallback) */
 .temp-marker {
     width: 28px !important;
     height: 28px !important;
