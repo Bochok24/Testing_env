@@ -899,35 +899,37 @@ body {
    Custom Markers
    ============================================= */
 .temp-marker {
-    width: 24px !important;
-    height: 24px !important;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    border: 3px solid white;
-    border-radius: 50%;
-    box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4);
+    width: 28px !important;
+    height: 28px !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+    border: 3px solid white !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3), var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5) !important;
     animation: markerPulse 1.5s ease-in-out infinite;
     display: block !important;
-    position: relative;
-    z-index: 1000;
-    margin: -12px 0 0 -12px !important;
+    z-index: 1000 !important;
 }
 
 @keyframes markerPulse {
-    0%, 100% { transform: scale(1); box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4); }
-    50% { transform: scale(1.1); box-shadow: var(--shadow-xl), 0 0 30px rgba(99, 102, 241, 0.6); }
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3), var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5); 
+    }
+    50% { 
+        transform: scale(1.15); 
+        box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.2), var(--shadow-xl), 0 0 35px rgba(99, 102, 241, 0.7); 
+    }
 }
 
 .submitted-marker {
-    width: 20px !important;
-    height: 20px !important;
-    background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-    border: 2px solid white;
-    border-radius: 50%;
-    box-shadow: var(--shadow-md), 0 4px 12px rgba(16, 185, 129, 0.3);
+    width: 18px !important;
+    height: 18px !important;
+    background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%) !important;
+    border: 2px solid white !important;
+    border-radius: 50% !important;
+    box-shadow: var(--shadow-md), 0 4px 12px rgba(16, 185, 129, 0.3) !important;
     display: block !important;
-    position: relative;
-    z-index: 999;
-    margin: -10px 0 0 -10px !important;
+    z-index: 999 !important;
 }
 
 /* =============================================

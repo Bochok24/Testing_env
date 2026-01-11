@@ -97,13 +97,13 @@
     const MarkerIcons = {
         temp: L.divIcon({
             className: 'temp-marker',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
         }),
         submitted: L.divIcon({
             className: 'submitted-marker',
-            iconSize: [14, 14],
-            iconAnchor: [7, 7]
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
         })
     };
 
