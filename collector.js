@@ -92,22 +92,32 @@
     };
 
     // =============================================
-    // Custom Marker Icons (Using L.icon with data URI for reliable mobile positioning)
+    // Custom Marker Icons (Using L.divIcon with inline styles - CitizenLink approach)
     // =============================================
-    
-    // SVG as data URI - bypasses CSS positioning issues entirely
-    const tempMarkerSvg = encodeURIComponent(`<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="12" fill="#6366f1" stroke="white" stroke-width="3"/><circle cx="16" cy="16" r="14" fill="none" stroke="rgba(99,102,241,0.4)" stroke-width="2"/></svg>`);
-    
-    const submittedMarkerSvg = encodeURIComponent(`<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" fill="#10b981" stroke="white" stroke-width="2"/></svg>`);
-    
     const MarkerIcons = {
-        temp: L.icon({
-            iconUrl: `data:image/svg+xml,${tempMarkerSvg}`,
-            iconSize: [32, 32],
-            iconAnchor: [16, 16]
+        temp: L.divIcon({
+            html: `<div style="
+                background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 3px solid white;
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5), 0 0 0 3px rgba(99, 102, 241, 0.3);
+            "></div>`,
+            className: 'temp-location-marker',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
         }),
-        submitted: L.icon({
-            iconUrl: `data:image/svg+xml,${submittedMarkerSvg}`,
+        submitted: L.divIcon({
+            html: `<div style="
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid white;
+                box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+            "></div>`,
+            className: 'submitted-location-marker',
             iconSize: [20, 20],
             iconAnchor: [10, 10]
         })
