@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="CitizenLink Field Test - Mobile Data Collection Tool">
+    <title>CitizenLink Field Test</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin="">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <h1 class="app-title">
+            <span class="icon-logo">📍</span>
+            CitizenLink Field Test
+        </h1>
+        <div class="top-bar-actions">
+            <button id="undoBtn" class="btn-icon" aria-label="Undo last submission" title="Undo" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7v6h6"></path>
+                    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+                </svg>
+            </button>
+            <button id="redoBtn" class="btn-icon" aria-label="Redo last undo" title="Redo" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 7v6h-6"></path>
+                    <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path>
+                </svg>
+            </button>
+            <button id="downloadBtn" class="btn-icon" aria-label="Download collected data" title="Download Data">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span class="badge" id="dataBadge" hidden>0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Full-screen Map Container -->
+    <main id="map" class="map-container" role="application" aria-label="Interactive map for data collection"></main>
+
+    <!-- Map Layer Switcher -->
+    <div class="map-layer-control" id="mapLayerControl">
+        <button class="layer-btn active" data-layer="streets" title="Street Map">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Streets</span>
+        </button>
+        <button class="layer-btn" data-layer="satellite" title="Satellite View">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+            <span>Satellite</span>
+        </button>
+        <button class="layer-btn" data-layer="terrain" title="Terrain Map">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 14 10 8 15 13 22 6"></polyline>
+            </svg>
+            <span>Terrain</span>
+        </button>
+    </div>
+
+    <!-- Bottom Sheet / Control Panel -->
+    <aside id="bottomSheet" class="bottom-sheet">
+        <!-- Drag Handle for Touch -->
+        <div class="sheet-handle" id="sheetHandle" aria-label="Drag to expand or collapse">
+            <span class="handle-bar"></span>
+        </div>
+
+        <!-- State A: Mission List View -->
+        <section id="missionListView" class="sheet-content">
+            <header class="sheet-header">
+                <h2>Available Missions</h2>
+                <span class="mission-counter" id="overallProgress">0 / 15 Complete</span>
+            </header>
+            <ul id="missionList" class="mission-list" role="list" aria-label="List of available missions">
+                <!-- Missions populated by JavaScript -->
+            </ul>
+        </section>
+
+        <!-- State B: Active Mission View -->
+        <section id="activeMissionView" class="sheet-content hidden">
+            <header class="sheet-header">
+                <button id="backToList" class="btn-back" aria-label="Back to mission list">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <h2 id="activeMissionTitle">Mission Title</h2>
+            </header>
+
+            <div class="mission-details">
+                <!-- Instruction Box -->
+                <div class="instruction-box">
+                    <p id="instructionText" class="instruction-text">Instructions will appear here...</p>
+                </div>
+
+                <!-- Progress Indicator -->
+                <div class="progress-container">
+                    <span class="progress-label">Entries:</span>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <span class="progress-count" id="progressCount">0 / 3</span>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls-container">
+                    <!-- Description Field -->
+                    <div class="form-group">
+                        <label for="descriptionInput" class="form-label">Description <span class="required">*</span></label>
+                        <textarea id="descriptionInput" class="form-textarea" placeholder="Describe the issue in detail..." rows="3" maxlength="500"></textarea>
+                    </div>
+
+                    <!-- Category & Subcategory Row -->
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="categorySelect" class="form-label">Category</label>
+                            <select id="categorySelect" class="form-select">
+                                <option value="Infrastructure">Infrastructure</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Public Safety">Public Safety</option>
+                                <option value="Sanitation">Sanitation</option>
+                                <option value="Traffic">Traffic</option>
+                                <option value="Environment">Environment</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="subcategorySelect" class="form-label">Subcategory</label>
+                            <select id="subcategorySelect" class="form-select">
+                                <!-- Populated dynamically based on category -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Priority Field -->
+                    <div class="form-group">
+                        <label for="prioritySelect" class="form-label">Priority</label>
+                        <select id="prioritySelect" class="form-select">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <button id="submitBtn" class="btn-submit" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Submit Location
+                    </button>
+
+                    <p class="hint-text" id="hintText">
+                        <span class="hint-icon">💡</span>
+                        Tap on the map to place a pin, then submit.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    
+    <!-- Application Logic -->
+    <script src="collector.js"></script>
+</body>
+</html>
