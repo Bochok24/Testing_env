@@ -1,6 +1,7 @@
 [
   {
     "id": "REAL-01",
+    "squad": "A",
     "title": "Zone A: The Deteriorating Highway",
     "instruction": "Simulate a bad road section. Walk/Scroll along Doña Aurora Street. Submit 5-8 'Pothole' reports spread out every 20-50 meters along the line.",
     "target": { "lat": 6.7386, "lng": 125.3576 },
@@ -11,6 +12,7 @@
   },
   {
     "id": "REAL-02",
+    "squad": "A",
     "title": "Zone B: The Subdivision Water Outage",
     "instruction": "Simulate a neighborhood-wide failure. Submit 5 'No Water' reports at different houses within this block. Use different descriptions (e.g., 'Low pressure', 'No flow').",
     "target": { "lat": 6.7560, "lng": 125.3591 },
@@ -21,6 +23,7 @@
   },
   {
     "id": "REAL-03",
+    "squad": "A",
     "title": "Zone C: Market Day Trash",
     "instruction": "Simulate a busy market area. Place 4 'Trash' or 'Illegal Dumping' reports near intersections or corners of this zone.",
     "target": { "lat": 6.7485, "lng": 125.3568 },
@@ -31,6 +34,7 @@
   },
   {
     "id": "REAL-04",
+    "squad": "A",
     "title": "Zone D: The Flood Prone Intersection",
     "instruction": "Create a weather event. Place 3 'Flood' reports at the low point of the road, and 2 'Traffic' reports on the roads leading into it.",
     "target": { "lat": 6.7577, "lng": 125.3504 },
@@ -41,6 +45,7 @@
   },
   {
     "id": "REAL-05",
+    "squad": "C",
     "title": "Zone E: Random Noise (The Control Group)",
     "instruction": "Simulate random, isolated incidents. Place 1 'Stray Dog', 1 'Streetlight', and 1 'Noise Complaint' very far apart from each other.",
     "target": { "lat": 6.7550, "lng": 125.3500 },
@@ -51,6 +56,7 @@
   },
   {
     "id": "STRESS-01",
+    "squad": "C",
     "title": "⚠️ TEST: The Trojan Horse (NLP Conflict)",
     "instruction": "Report 'Pothole' (Low Priority). Then, at the EXACT same location, report 'Pothole'. But in the description, type: 'EXTREME DANGER HOUSE FIRE HERE'",
     "target": { "lat": 6.7541, "lng": 125.3516 },
@@ -61,6 +67,7 @@
   },
   {
     "id": "STRESS-02",
+    "squad": "B",
     "title": "⚠️ TEST: The Triple Split (Spatial)",
     "instruction": "Precision Test: In Diversion Road, Report Pothole A. Move map South ~60m -> Pothole B. Move South ~60m -> Pothole C. (Must be 3 pins).",
     "target": { "lat": 6.7315, "lng": 125.3622 },
@@ -71,6 +78,7 @@
   },
   {
     "id": "STRESS-03",
+    "squad": "B",
     "title": "⚠️ TEST: The Chain Link (DBSCAN Weakness)",
     "instruction": "Create a chain of 4 Trash reports spaced evenly apart (15m gap each). Report A -> 15m -> B -> 15m -> C -> 15m -> D. Total span is 45m.",
     "target": { "lat": 6.7392, "lng": 125.3457 },

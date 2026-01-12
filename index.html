@@ -284,6 +284,60 @@
         </div>
     </div>
 
+    <!-- Squad Selection Modal -->
+    <div id="squadModal" class="squad-modal" style="display: none;">
+        <div class="squad-overlay"></div>
+        <div class="squad-content">
+            <div class="squad-header">
+                <h2>👥 Select Your Testing Squad</h2>
+                <p class="squad-subtitle">Choose your assigned group to access your missions</p>
+            </div>
+            
+            <div class="squad-body">
+                <div class="squad-card" data-squad="A">
+                    <div class="squad-badge">SQUAD A</div>
+                    <div class="squad-info">
+                        <h3>Realistic Scenarios</h3>
+                        <p>4 missions focusing on common urban infrastructure issues</p>
+                        <ul class="squad-missions">
+                            <li>Zone A: Deteriorating Highway</li>
+                            <li>Zone B: Water Outage</li>
+                            <li>Zone C: Market Day Trash</li>
+                            <li>Zone D: Flood Prone Intersection</li>
+                        </ul>
+                    </div>
+                    <button class="btn-squad-select" data-squad="A">SELECT SQUAD A</button>
+                </div>
+
+                <div class="squad-card" data-squad="B">
+                    <div class="squad-badge">SQUAD B</div>
+                    <div class="squad-info">
+                        <h3>Stress Tests</h3>
+                        <p>2 missions testing system edge cases and clustering algorithms</p>
+                        <ul class="squad-missions">
+                            <li>⚠️ Triple Split (Spatial)</li>
+                            <li>⚠️ Chain Link (DBSCAN)</li>
+                        </ul>
+                    </div>
+                    <button class="btn-squad-select" data-squad="B">SELECT SQUAD B</button>
+                </div>
+
+                <div class="squad-card" data-squad="C">
+                    <div class="squad-badge">SQUAD C</div>
+                    <div class="squad-info">
+                        <h3>Mixed Scenarios</h3>
+                        <p>2 missions combining realistic and stress test scenarios</p>
+                        <ul class="squad-missions">
+                            <li>Zone E: Random Noise (Control)</li>
+                            <li>⚠️ Trojan Horse (NLP Conflict)</li>
+                        </ul>
+                    </div>
+                    <button class="btn-squad-select" data-squad="C">SELECT SQUAD C</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 

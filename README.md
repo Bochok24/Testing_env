@@ -1,8 +1,8 @@
 # CitizenLink Field Test - Mobile Data Collection Platform
 
-A modern, responsive web application for conducting structured field testing and data collection of citizen complaints. Built with vanilla JavaScript, Leaflet.js for interactive mapping, and a beautiful purple-themed UI with glassmorphism design. Features an integrated informed consent system for ethical data collection in research studies.
+A modern, responsive web application for conducting structured field testing and data collection of citizen complaints. Built with vanilla JavaScript, Leaflet.js for interactive mapping, and a beautiful purple-themed UI with glassmorphism design. Features an integrated informed consent system and squad-based mission distribution for ethical data collection in research studies.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Mobile](https://img.shields.io/badge/mobile-optimized-brightgreen.svg)
 ![Research](https://img.shields.io/badge/research-compliant-purple.svg)
@@ -31,6 +31,7 @@ A modern, responsive web application for conducting structured field testing and
 - 📊 **Progress Tracking** - Real-time mission progress visualization
 - 🎯 **8 Field Zones** - Realistic zone-based data collection missions including stress tests
 - 📋 **Informed Consent** - Digital consent form with scroll-to-enable functionality
+- 👥 **Squad System** - Organized testing groups with mission distribution
 
 ### User Experience
 - 🎨 **Modern UI** - Purple gradient theme with glassmorphism effects
@@ -40,6 +41,7 @@ A modern, responsive web application for conducting structured field testing and
 - 🔄 **Smooth Animations** - Fluid transitions and micro-interactions
 - 🌐 **Landscape Mode** - Adaptive layout for landscape orientation
 - 🔒 **Privacy-First** - User identification with no real-time tracking
+- 🎯 **Squad-Based Access** - Missions filtered by assigned squad
 
 ### Data Collection
 - 7 complaint categories with dynamic subcategories
@@ -48,7 +50,7 @@ A modern, responsive web application for conducting structured field testing and
 - GPS coordinate logging
 - Timestamp tracking
 - Export functionality (JSON/CSV)
-- User identification tracking (Tester ID & Full Name)
+- User identification tracking (Tester ID, Full Name, Squad)
 
 ## 🚀 Quick Start
 
@@ -93,14 +95,21 @@ A modern, responsive web application for conducting structured field testing and
    - Scroll to the bottom to enable the acceptance checkbox
    - Enter your Tester ID and Full Name
    - Check the consent agreement box
-   - Click "START MISSION" to begin
+   - Click "START MISSION" to proceed
 
-2. Grant location permissions when prompted (for optimal experience)
-3. Review the mission list on the main screen
-4. Select a mission to begin field testing
-5. Follow the mission instructions
-6. Click on the map to mark complaint locations
-7. Fill in the complaint form and submit
+2. **Select Your Squad**
+   - Choose your assigned testing squad (A, B, or C)
+   - **Squad A**: 4 realistic scenario missions (Highway, Water Outage, Trash, Flooding)
+   - **Squad B**: 2 stress test missions (Triple Split, Chain Link)
+   - **Squad C**: 2 mixed missions (Random Noise, Trojan Horse)
+   - Click "SELECT SQUAD X" to confirm your choice
+
+3. Grant location permissions when prompted (for optimal experience)
+4. Review your squad's mission list
+5. Select a mission to begin field testing
+6. Follow the mission instructions
+7. Click on the map to mark complaint locations
+8. Fill in the complaint form and submit
 
 ## 📁 Project Structure
 
@@ -116,10 +125,10 @@ DATA_COLLECTION/
 
 ### File Descriptions
 
-- **index.html** - Single-page application structure with semantic HTML5 and consent modal
-- **styles.css** - 1900+ lines of modern CSS with mobile optimizations and consent form styling
-- **collector.js** - 1200+ lines of vanilla JavaScript with consent management
-- **mission_config.json** - 8 missions including realistic zones and stress test scenarios
+- **index.html** - Single-page application structure with semantic HTML5, consent modal, and squad selection
+- **styles.css** - 2200+ lines of modern CSS with mobile optimizations, consent form, and squad selection styling
+- **collector.js** - 1400+ lines of vanilla JavaScript with consent management and squad filtering
+- **mission_config.json** - 8 missions with squad assignments (A: 4 missions, B: 2 missions, C: 2 missions)
 
 ## 🛠️ Technology Stack
 
@@ -166,6 +175,7 @@ Edit `mission_config.json` to customize missions:
 ```json
 {
   "id": "REAL-01",
+  "squad": "A",
   "title": "Zone A: The Deteriorating Highway",
   "instruction": "Simulate a bad road section. Walk/Scroll along the street. Submit 5-8 'Pothole' reports spread out every 20-50 meters along the line.",
   "target": { "lat": 6.7386, "lng": 125.3576 },
@@ -177,7 +187,8 @@ Edit `mission_config.json` to customize missions:
 ```
 
 **Parameters:**
-- `id`: Unique mission identifier (REAL-XX format)
+- `id`: Unique mission identifier (REAL-XX or STRESS-XX format)
+- `squad`: Squad assignment ("A", "B", or "C")
 - `title`: Zone-based mission name
 - `instruction`: Detailed instructions for field testers
 - `target`: GPS coordinates for mission center (`lat`, `lng`)
@@ -185,6 +196,14 @@ Edit `mission_config.json` to customize missions:
 - `required_count`: Number of complaints required to complete
 - `suggested_category`: Recommended complaint category
 - `boundary_radius`: Allowed radius from center (meters)
+
+### Squad Distribution
+
+Missions are distributed across three squads:
+
+- **Squad A**: REAL-01, REAL-02, REAL-03, REAL-04 (4 realistic scenarios)
+- **Squad B**: STRESS-02, STRESS-03 (2 stress tests)
+- **Squad C**: REAL-05, STRESS-01 (2 mixed scenarios)
 
 ### Customizing Categories
 
@@ -225,32 +244,41 @@ Edit CSS variables in `styles.css`:
    - Enter your **Tester ID** (e.g., TESTER-001)
    - Enter your **Full Name**
    - Check the "I AGREE TO PARTICIPATE" checkbox
-   - Click "START MISSION" to begin testing
+   - Click "START MISSION" to continue
 
-2. **Select a Mission**
-   - Browse available missions (5 realistic zones + 3 stress tests)
-   - Click on a mission card to start
+2. **Squad Selection**
+   - Choose your assigned testing squad from the squad selection screen
+   - **Squad A** - 4 realistic infrastructure scenarios
+   - **Squad B** - 2 advanced stress test scenarios
+   - **Squad C** - 2 mixed control and conflict scenarios
+   - Click "SELECT SQUAD X" to access your missions
+   - Your squad assignment will be saved for future sessions
 
-3. **Mark Locations**
+3. **Browse Your Missions**
+   - View missions assigned to your squad (missions are filtered automatically)
+   - Progress tracker shows "Squad X: N / Total Complete"
+   - Click on any mission card to begin
+
+4. **Mark Locations**
    - Click anywhere on the map within the boundary circle
    - A marker will appear at your clicked location
 
-4. **Fill Complaint Form**
+5. **Fill Complaint Form**
    - Enter description (required)
    - Select category and subcategory
    - Choose priority level
    - Click "Submit Complaint"
 
-5. **Track Progress**
+6. **Track Progress**
    - View progress bar showing X/Y complaints
    - Mission completes when target is reached
 
-6. **Undo/Redo**
+7. **Undo/Redo**
    - Use toolbar buttons or keyboard shortcuts:
      - **Undo**: `Ctrl+Z` (Windows) / `Cmd+Z` (Mac)
      - **Redo**: `Ctrl+Shift+Z` or `Ctrl+Y`
 
-7. **Switch Map Layers**
+8. **Switch Map Layers**
    - Click layer buttons (bottom-left corner)
    - Choose between Streets, Satellite, or Terrain
 
@@ -349,6 +377,7 @@ Edit CSS variables in `styles.css`:
   id: "uuid-v4",
   user_id: "TESTER-001",
   user_name: "John Doe",
+  squad: "A",
   missionId: "REAL-01",
   timestamp: "2026-01-13T10:30:00.000Z",
   location: {
@@ -367,15 +396,16 @@ Edit CSS variables in `styles.css`:
 **JSON:**
 ```json
 {
-  "mission": "S-01",
+  "mission": "REAL-01",
+  "squad": "A",
   "submissions": [/* complaints array */],
-  "exportDate": "2026-01-11T10:30:00.000Z"
+  "exportDate": "2026-01-13T10:30:00.000Z"
 }
 ```
 
 **CSV:**
 ```csv
-ID,User_ID,User_Name,Mission,Timestamp,Latitude,Longitude,Description,Category,Subcategory,Priority
+ID,User_ID,User_Name,Squad,Mission,Timestamp,Latitude,Longitude,Description,Category,Subcategory,Priority
 ```
 
 ## 🔒 Privacy & Ethics
@@ -398,6 +428,12 @@ ID,User_ID,User_Name,Mission,Timestamp,Latitude,Longitude,Description,Category,S
 - Consent timestamp recorded for audit trails
 - Re-opening application remembers consent status
 - Clear browser data to reset consent status
+
+### Squad Selection
+- Squad choice persisted in localStorage across sessions
+- Missions automatically filtered by selected squad
+- Squad assignment included in all data exports
+- Cannot change squad without clearing browser data (intentional for data integrity)
 
 ## 🤝 Contributing
 
@@ -435,7 +471,14 @@ For issues, questions, or suggestions:
 
 ## 🗺️ Roadmap
 
-### Version 1.1.0 ✅ (Current)
+### Version 1.2.0 ✅ (Current)
+- [x] Squad selection system (A, B, C)
+- [x] Mission filtering by squad assignment
+- [x] Squad-specific progress tracking
+- [x] Squad data in exports and submissions
+- [x] Beautiful squad selection UI with color coding
+
+### Version 1.1.0 ✅
 - [x] Digital Informed Consent Form
 - [x] User identification system (Tester ID & Name)
 - [x] Scroll-to-enable consent mechanism
@@ -446,13 +489,23 @@ For issues, questions, or suggestions:
 - [ ] Offline mode with service workers
 - [ ] Photo attachments for complaints
 - [ ] Real-time collaboration
-- [ ] Admin dashboard
+- [ ] Admin dashboard with squad analytics
 - [ ] Data analytics and reporting
 - [ ] Multi-language support
 - [ ] Voice input for descriptions
 - [ ] Export consent certificates
 
 ## 📜 Version History
+
+### v1.2.0 (2026-01-13)
+- Added squad selection system with three testing groups (A, B, C)
+- Implemented mission filtering based on selected squad
+- Added squad assignment to mission_config.json
+- Updated progress tracker to show squad-specific completion
+- Included squad information in all data exports
+- Added beautiful squad selection modal with color-coded cards
+- Enhanced UI with squad-specific visual indicators
+- Updated documentation with squad distribution details
 
 ### v1.1.0 (2026-01-13)
 - Added Digital Informed Consent Form with research compliance

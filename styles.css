@@ -1978,3 +1978,265 @@ body {
         padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
     }
 }
+/* =============================================
+   Squad Selection Modal
+   ============================================= */
+.squad-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.squad-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.squad-content {
+    position: relative;
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl), 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+.squad-header {
+    flex-shrink: 0;
+    padding: 28px 32px 24px;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    text-align: center;
+}
+
+.squad-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 10px 0;
+}
+
+.squad-subtitle {
+    font-size: 1rem;
+    line-height: 1.4;
+    opacity: 0.95;
+    font-weight: 500;
+    margin: 0;
+}
+
+.squad-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 32px;
+    background: #f8fafc;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    align-content: start;
+    -webkit-overflow-scrolling: touch;
+}
+
+.squad-card {
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all var(--transition-normal);
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.squad-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg), 0 12px 32px rgba(99, 102, 241, 0.2);
+    border-color: var(--primary-light);
+}
+
+.squad-badge {
+    align-self: flex-start;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.squad-card[data-squad="A"] .squad-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.squad-card[data-squad="B"] .squad-badge {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.squad-card[data-squad="C"] .squad-badge {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.squad-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.squad-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.squad-info p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.squad-missions {
+    list-style: none;
+    margin: 8px 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.squad-missions li {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    padding-left: 20px;
+    position: relative;
+}
+
+.squad-missions li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.btn-squad-select {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-squad-select:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-squad-select:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+.squad-card[data-squad="A"] .btn-squad-select {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.squad-card[data-squad="B"] .btn-squad-select {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.squad-card[data-squad="C"] .btn-squad-select {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+/* Mobile Responsive for Squad Modal */
+@media screen and (max-width: 768px) {
+    .squad-modal {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .squad-content {
+        max-height: 95vh;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .squad-header {
+        padding: 24px 20px 20px;
+    }
+
+    .squad-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .squad-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .squad-body {
+        padding: 24px 20px;
+        grid-template-columns: 1fr;
+    }
+
+    .squad-card {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .squad-content {
+        max-height: 98vh;
+    }
+
+    .squad-header {
+        padding: 20px 16px 18px;
+    }
+
+    .squad-header h2 {
+        font-size: 1.15rem;
+    }
+
+    .squad-body {
+        padding: 20px 16px;
+    }
+
+    .squad-card {
+        padding: 18px;
+    }
+
+    .squad-info h3 {
+        font-size: 1.1rem;
+    }
+}

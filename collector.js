@@ -32,7 +32,9 @@
         measurementMarkers: [],
         // User identification
         userId: null,
-        userName: null
+        userName: null,
+        // Squad selection
+        selectedSquad: null
     };
 
     // =============================================
@@ -68,7 +70,11 @@
         consentCheckbox: document.getElementById('consentCheckbox'),
         consentAcceptBtn: document.getElementById('consentAcceptBtn'),
         userIdInput: document.getElementById('userIdInput'),
-        userNameInput: document.getElementById('userNameInput')
+        userNameInput: document.getElementById('userNameInput'),
+        // Squad selection elements
+        squadModal: document.getElementById('squadModal'),
+        squadCards: document.querySelectorAll('.squad-card'),
+        squadSelectBtns: document.querySelectorAll('.btn-squad-select')
     };
 
     // =============================================
@@ -144,6 +150,12 @@
         // Check consent first
         if (!hasConsented()) {
             showConsentModal();
+            return;
+        }
+
+        // Check squad selection
+        if (!hasSelectedSquad()) {
+            showSquadModal();
             return;
         }
 
@@ -237,6 +249,57 @@
         DOM.consentModal.style.animation = 'fadeOut 0.3s ease';
         setTimeout(() => {
             DOM.consentModal.style.display = 'none';
+            // Show squad selection next
+            init();
+        }, 300);
+    }
+
+    // =============================================
+    // Squad Selection Management
+    // =============================================
+    function hasSelectedSquad() {
+        const squad = localStorage.getItem('citizenlink_squad');
+        if (squad) {
+            AppState.selectedSquad = squad;
+            return true;
+        }
+        return false;
+    }
+
+    function showSquadModal() {
+        DOM.squadModal.style.display = 'flex';
+        
+        // Add click handlers to squad selection buttons
+        DOM.squadSelectBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const squad = this.getAttribute('data-squad');
+                selectSquad(squad);
+            });
+        });
+
+        // Add hover effects to squad cards
+        DOM.squadCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    }
+
+    function selectSquad(squad) {
+        // Store squad selection
+        AppState.selectedSquad = squad;
+        localStorage.setItem('citizenlink_squad', squad);
+        localStorage.setItem('citizenlink_squad_timestamp', new Date().toISOString());
+
+        showToast(`Squad ${squad} selected! Loading your missions...`, 'success');
+
+        // Hide modal with animation
+        DOM.squadModal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+            DOM.squadModal.style.display = 'none';
             // Initialize the app
             init();
         }, 300);
@@ -343,10 +406,14 @@
     // Render Mission List
     // =============================================
     function renderMissionList() {
-        const completedCount = AppState.missions.filter(m => m.status === 'completed').length;
-        DOM.overallProgress.textContent = `${completedCount} / ${AppState.missions.length} Complete`;
+        // Filter missions by selected squad
+        const filteredMissions = AppState.missions.filter(m => m.squad === AppState.selectedSquad);
+        const completedCount = filteredMissions.filter(m => m.status === 'completed').length;
+        DOM.overallProgress.textContent = `Squad ${AppState.selectedSquad}: ${completedCount} / ${filteredMissions.length} Complete`;
 
-        DOM.missionList.innerHTML = AppState.missions.map(mission => `
+        DOM.missionList.innerHTML = filteredMissions.map(mission => {
+            const missionIndex = filteredMissions.indexOf(mission) + 1;
+            return `
             <li class="mission-item ${mission.status === 'completed' ? 'completed' : ''}" 
                 data-mission-id="${mission.id}"
                 tabindex="0"
@@ -355,7 +422,7 @@
                 <span class="mission-status ${mission.status === 'completed' ? 'status-done' : 'status-pending'}">
                     ${mission.status === 'completed' 
                         ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-                        : (AppState.missions.indexOf(mission) + 1)}
+                        : missionIndex}
                 </span>
                 <div class="mission-info">
                     <span class="mission-title">${escapeHtml(mission.title)}</span>
@@ -365,7 +432,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </span>
             </li>
-        `).join('');
+        `}).join('');
 
         // Add click handlers to mission items
         DOM.missionList.querySelectorAll('.mission-item').forEach(item => {
@@ -562,6 +629,7 @@
             // User identification
             user_id: AppState.userId,
             user_name: AppState.userName,
+            squad: AppState.selectedSquad,
             
             // Mission tracking (for test purposes)
             _mission_id: mission.id,
