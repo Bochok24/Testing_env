@@ -1,122 +1,52 @@
 [
   {
-    "id": "S-01",
-    "title": "S-01: Direct Redundancy",
-    "instruction": "Stand at the corner. Submit 3 separate 'Pothole' reports at the EXACT same location (don't move the pin).",
-    "target": { "lat": 6.7490, "lng": 125.3572 },
-    "zoom": 19,
-    "required_count": 3,
-    "suggested_category": "Pothole",
-    "boundary_radius": 10
-  },
-  {
-    "id": "S-02",
-    "title": "S-02: Causal Chain",
-    "instruction": "First, report a 'Pipe Leak'. Then, move the pin 10 meters downhill and report a 'Flood'.",
-    "target": { "lat": 6.7495, "lng": 125.3580 },
-    "zoom": 19,
-    "required_count": 2,
-    "suggested_category": "Pipe Leak",
-    "boundary_radius": 25
-  },
-  {
-    "id": "S-03",
-    "title": "S-03: Discrete Neighbors",
-    "instruction": "Report 'No Water' at House A. Then report 'No Water' at House B (approx 15 meters away).",
-    "target": { "lat": 6.7510, "lng": 125.3560 },
-    "zoom": 19,
-    "required_count": 2,
-    "suggested_category": "No Water",
-    "boundary_radius": 30
-  },
-  {
-    "id": "S-04",
-    "title": "S-04: False Correlation",
-    "instruction": "Report a 'Stray Dog'. Then, right next to it (1 meter away), report a 'Pothole'.",
-    "target": { "lat": 6.7520, "lng": 125.3590 },
-    "zoom": 20,
-    "required_count": 2,
-    "suggested_category": "Stray Dog",
-    "boundary_radius": 15
-  },
-  {
-    "id": "S-05",
-    "title": "S-05: Domino Effect",
-    "instruction": "Create a line: 1. Pipe Leak -> 2. Flood (10m away) -> 3. Traffic (another 10m away).",
-    "target": { "lat": 6.7530, "lng": 125.3575 },
-    "zoom": 18,
-    "required_count": 3,
-    "suggested_category": "Pipe Leak",
-    "boundary_radius": 40
-  },
-  {
-    "id": "S-06",
-    "title": "S-06: Precision Edge",
-    "instruction": "Report Pothole A (Center). Report Pothole B roughly 25 meters away (use the scale reference).",
-    "target": { "lat": 6.7470, "lng": 125.3540 },
-    "zoom": 19,
-    "required_count": 2,
-    "suggested_category": "Pothole",
-    "boundary_radius": 40
-  },
-  {
-    "id": "S-07",
-    "title": "S-07: Mass Panic",
-    "instruction": "Simulate a panic. Rapidly click 5 times in a small cluster around this building.",
-    "target": { "lat": 6.7505, "lng": 125.3585 },
-    "zoom": 18,
-    "required_count": 5,
-    "suggested_category": "Fire",
-    "boundary_radius": 30
-  },
-  {
-    "id": "S-08",
-    "title": "S-08: GPS Drift",
-    "instruction": "Aim for the streetlight, but click 5 times slightly off-center (scattered) to simulate bad GPS.",
-    "target": { "lat": 6.7485, "lng": 125.3565 },
-    "zoom": 20,
-    "required_count": 5,
-    "suggested_category": "Streetlight",
-    "boundary_radius": 20
-  },
-  {
-    "id": "S-9",
-    "title": "S-9: Data Conflict",
-    "instruction": "Report 'Fire'. Then, without moving the pin, report 'Pothole' at the EXACT same spot.",
-    "target": { "lat": 6.7515, "lng": 125.3530 },
-    "zoom": 20,
-    "required_count": 2,
-    "suggested_category": "Fire",
-    "boundary_radius": 10
-  },
-  {
-    "id": "S-10",
-    "title": "S-10: Synonyms (NLP)",
-    "instruction": "Report 'Flood' (English). Then report 'Baha' (Tagalog) nearby.",
-    "target": { "lat": 6.7525, "lng": 125.3555 },
-    "zoom": 19,
-    "required_count": 2,
-    "suggested_category": "Flood",
-    "boundary_radius": 25
-  },
-  {
-    "id": "S-11",
-    "title": "S-11: Moving Hazard",
-    "instruction": "Report 'Dog' here. Then scroll the map North (approx 60m) and report 'Dog' again.",
-    "target": { "lat": 6.7540, "lng": 125.3570 },
+    "id": "REAL-01",
+    "title": "Zone A: The Deteriorating Highway",
+    "instruction": "Simulate a bad road section. Walk/Scroll along Doña Aurora Street. Submit 5-8 'Pothole' reports spread out every 20-50 meters along the line.",
+    "target": { "lat": 6.7386, "lng": 125.3576 },
     "zoom": 17,
-    "required_count": 2,
-    "suggested_category": "Stray Dog",
-    "boundary_radius": 80
+    "required_count": 6,
+    "suggested_category": "Pothole",
+    "boundary_radius": 300
   },
   {
-    "id": "S-12",
-    "title": "S-12: Default Pin",
-    "instruction": "Do not move the pin. Just hit submit immediately (simulates lazy user).",
-    "target": { "lat": 6.7490, "lng": 125.3572 },
-    "zoom": 15,
-    "required_count": 1,
-    "suggested_category": "Pothole",
-    "boundary_radius": 50
+    "id": "REAL-02",
+    "title": "Zone B: The Subdivision Water Outage",
+    "instruction": "Simulate a neighborhood-wide failure. Submit 5 'No Water' reports at different houses within this block. Use different descriptions (e.g., 'Low pressure', 'No flow').",
+    "target": { "lat": 6.7560, "lng": 125.3591 },
+    "zoom": 18,
+    "required_count": 5,
+    "suggested_category": "No Water",
+    "boundary_radius": 150
+  },
+  {
+    "id": "REAL-03",
+    "title": "Zone C: Market Day Trash",
+    "instruction": "Simulate a busy market area. Place 4 'Trash' or 'Illegal Dumping' reports near intersections or corners of this zone.",
+    "target": { "lat": 6.7485, "lng": 125.3568 },
+    "zoom": 19,
+    "required_count": 4,
+    "suggested_category": "Trash",
+    "boundary_radius": 120
+  },
+  {
+    "id": "REAL-04",
+    "title": "Zone D: The Flood Prone Intersection",
+    "instruction": "Create a weather event. Place 3 'Flood' reports at the low point of the road, and 2 'Traffic' reports on the roads leading into it.",
+    "target": { "lat": 6.7577, "lng": 125.3504 },
+    "zoom": 18,
+    "required_count": 5,
+    "suggested_category": "Flooding",
+    "boundary_radius": 120
+  },
+  {
+    "id": "REAL-05",
+    "title": "Zone E: Random Noise (The Control Group)",
+    "instruction": "Simulate random, isolated incidents. Place 1 'Stray Dog', 1 'Streetlight', and 1 'Noise Complaint' very far apart from each other.",
+    "target": { "lat": 6.7550, "lng": 125.3500 },
+    "zoom": 16,
+    "required_count": 3,
+    "suggested_category": "Stray Dog",
+    "boundary_radius": 500
   }
 ]

@@ -28,7 +28,7 @@ A modern, responsive web application for conducting structured field testing and
 - ↩️ **Undo/Redo** - Complete undo/redo functionality with keyboard shortcuts
 - 💾 **Local Storage** - Persistent data storage for offline capability
 - 📊 **Progress Tracking** - Real-time mission progress visualization
-- 🎯 **12 Test Scenarios** - Comprehensive field testing missions
+- 🎯 **5 Field Zones** - Realistic zone-based data collection missions
 
 ### User Experience
 - 🎨 **Modern UI** - Purple gradient theme with glassmorphism effects
@@ -108,7 +108,7 @@ DATA_COLLECTION/
 - **index.html** - Single-page application structure with semantic HTML5
 - **styles.css** - 1400+ lines of modern CSS with mobile optimizations
 - **collector.js** - 1000+ lines of vanilla JavaScript with no dependencies
-- **mission_config.json** - 12 mission scenarios with boundaries and requirements
+- **mission_config.json** - 5 zone-based field missions with boundaries and requirements
 
 ## 🛠️ Technology Stack
 
@@ -154,25 +154,26 @@ Edit `mission_config.json` to customize missions:
 
 ```json
 {
-  "id": "S-01",
-  "title": "Mission Title",
-  "description": "Mission description",
-  "target_count": 5,
-  "boundary_radius": 50,
-  "center": {
-    "lat": 14.5995,
-    "lng": 120.9842
-  }
+  "id": "REAL-01",
+  "title": "Zone A: The Deteriorating Highway",
+  "instruction": "Simulate a bad road section. Walk/Scroll along the street. Submit 5-8 'Pothole' reports spread out every 20-50 meters along the line.",
+  "target": { "lat": 6.7386, "lng": 125.3576 },
+  "zoom": 17,
+  "required_count": 6,
+  "suggested_category": "Pothole",
+  "boundary_radius": 300
 }
 ```
 
 **Parameters:**
-- `id`: Unique mission identifier
-- `title`: Mission display name
-- `description`: Instructions for testers
-- `target_count`: Number of complaints required
+- `id`: Unique mission identifier (REAL-XX format)
+- `title`: Zone-based mission name
+- `instruction`: Detailed instructions for field testers
+- `target`: GPS coordinates for mission center (`lat`, `lng`)
+- `zoom`: Initial map zoom level
+- `required_count`: Number of complaints required to complete
+- `suggested_category`: Recommended complaint category
 - `boundary_radius`: Allowed radius from center (meters)
-- `center`: GPS coordinates for mission center
 
 ### Customizing Categories
 
