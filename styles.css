@@ -153,6 +153,11 @@ body {
     transform: scale(0.95) translateY(0);
 }
 
+.btn-icon.active {
+    background: var(--primary-color);
+    color: white;
+}
+
 .badge {
     position: absolute;
     top: -4px;
@@ -900,6 +905,35 @@ body {
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
     }
+}
+
+/* =============================================
+   Measurement Tool
+   ============================================= */
+.measurement-tooltip {
+    background: rgba(0, 0, 0, 0.85) !important;
+    border: 2px solid var(--primary-color) !important;
+    border-radius: var(--radius-sm) !important;
+    color: white !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    padding: 8px 12px !important;
+    box-shadow: var(--shadow-lg) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.measurement-tooltip::before {
+    display: none !important;
+}
+
+.measurement-marker {
+    background: var(--primary-color);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* =============================================

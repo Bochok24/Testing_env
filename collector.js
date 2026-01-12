@@ -25,7 +25,12 @@
         undoStack: [],
         redoStack: [],
         currentLayer: 'streets',
-        mapTileLayer: null
+        mapTileLayer: null,
+        // Measurement tool state
+        isMeasuring: false,
+        measurementPoints: [],
+        measurementLine: null,
+        measurementMarkers: []
     };
 
     // =============================================
@@ -33,6 +38,7 @@
     // =============================================
     const DOM = {
         map: null,
+        measureBtn: document.getElementById('measureBtn'),
         downloadBtn: document.getElementById('downloadBtn'),
         undoBtn: document.getElementById('undoBtn'),
         redoBtn: document.getElementById('redoBtn'),
@@ -360,6 +366,12 @@
     // Handle Map Click
     // =============================================
     function handleMapClick(e) {
+        // If in measurement mode, handle measurement
+        if (AppState.isMeasuring) {
+            handleMeasurementClick(e);
+            return;
+        }
+
         if (!AppState.activeMission) return;
 
         const mission = AppState.activeMission;
@@ -828,6 +840,17 @@
     // Event Bindings
     // =============================================
     function bindEvents() {
+        // Measure button
+        DOM.measureBtn.addEventListener('click', toggleMeasurementTool);
+
+        // Double-click map to finish measuring
+        DOM.map.on('dblclick', (e) => {
+            if (AppState.isMeasuring) {
+                e.originalEvent.preventDefault();
+                toggleMeasurementTool();
+            }
+        });
+
         // Download button
         DOM.downloadBtn.addEventListener('click', downloadData);
 
@@ -1041,6 +1064,100 @@
                 <p class="empty-state-text">${escapeHtml(message)}</p>
             </div>
         `;
+    }
+
+    // =============================================
+    // Measurement Tool
+    // =============================================
+    function toggleMeasurementTool() {
+        AppState.isMeasuring = !AppState.isMeasuring;
+        
+        if (AppState.isMeasuring) {
+            DOM.measureBtn.classList.add('active');
+            showToast('Measurement mode ON - Click on map to measure distances', 'success');
+            DOM.map.getContainer().style.cursor = 'crosshair';
+        } else {
+            DOM.measureBtn.classList.remove('active');
+            clearMeasurements();
+            showToast('Measurement mode OFF', 'warning');
+            DOM.map.getContainer().style.cursor = '';
+        }
+    }
+
+    function handleMeasurementClick(e) {
+        if (!AppState.isMeasuring) return;
+
+        AppState.measurementPoints.push(e.latlng);
+
+        // Add marker at clicked point
+        const marker = L.marker(e.latlng, {
+            icon: L.divIcon({
+                html: '<div class="measurement-marker"></div>',
+                className: '',
+                iconSize: [10, 10]
+            })
+        }).addTo(DOM.map);
+        AppState.measurementMarkers.push(marker);
+
+        // If we have at least 2 points, draw/update line and show distance
+        if (AppState.measurementPoints.length >= 2) {
+            // Remove old line if exists
+            if (AppState.measurementLine) {
+                DOM.map.removeLayer(AppState.measurementLine);
+            }
+
+            // Calculate total distance
+            let totalDistance = 0;
+            for (let i = 1; i < AppState.measurementPoints.length; i++) {
+                totalDistance += AppState.measurementPoints[i-1].distanceTo(AppState.measurementPoints[i]);
+            }
+
+            // Draw polyline
+            AppState.measurementLine = L.polyline(AppState.measurementPoints, {
+                color: '#6366f1',
+                weight: 3,
+                opacity: 0.8,
+                dashArray: '10, 5'
+            }).addTo(DOM.map);
+
+            // Format distance
+            const distanceText = totalDistance < 1000 
+                ? `${totalDistance.toFixed(1)} m`
+                : `${(totalDistance / 1000).toFixed(2)} km`;
+
+            // Add tooltip at the last point
+            const lastPoint = AppState.measurementPoints[AppState.measurementPoints.length - 1];
+            const tooltip = L.tooltip({
+                permanent: true,
+                direction: 'top',
+                className: 'measurement-tooltip'
+            })
+                .setLatLng(lastPoint)
+                .setContent(`<strong>Distance: ${distanceText}</strong>`)
+                .addTo(DOM.map);
+
+            AppState.measurementMarkers.push(tooltip);
+        }
+
+        // Double-click to finish - add a hint on first click
+        if (AppState.measurementPoints.length === 1) {
+            showToast('Click again to measure, double-click to finish', 'success');
+        }
+    }
+
+    function clearMeasurements() {
+        // Remove all markers and lines
+        AppState.measurementMarkers.forEach(marker => {
+            DOM.map.removeLayer(marker);
+        });
+        
+        if (AppState.measurementLine) {
+            DOM.map.removeLayer(AppState.measurementLine);
+            AppState.measurementLine = null;
+        }
+
+        AppState.measurementPoints = [];
+        AppState.measurementMarkers = [];
     }
 
     // =============================================
