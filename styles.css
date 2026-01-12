@@ -929,11 +929,18 @@ body {
 
 .measurement-marker {
     background: var(--primary-color);
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 3px solid white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    cursor: move;
+    transition: all var(--transition-fast);
+}
+
+.measurement-marker:hover {
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
 }
 
 /* =============================================

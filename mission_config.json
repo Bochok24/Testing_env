@@ -62,7 +62,7 @@
   {
     "id": "STRESS-02",
     "title": "⚠️ TEST: The Triple Split (Spatial)",
-    "instruction": "Precision Test: Report Pothole A. Move map South ~60m -> Pothole B. Move South ~60m -> Pothole C. (Must be 3 pins).",
+    "instruction": "Precision Test: In Bonifacio 1st Street, Report Pothole A. Move map South ~60m -> Pothole B. Move South ~60m -> Pothole C. (Must be 3 pins).",
     "target": { "lat": 6.7420, "lng": 125.3580 },
     "zoom": 18,
     "required_count": 3,
