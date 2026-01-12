@@ -27,7 +27,7 @@
     "zoom": 19,
     "required_count": 4,
     "suggested_category": "Trash",
-    "boundary_radius": 120
+    "boundary_radius": 150
   },
   {
     "id": "REAL-04",
@@ -51,12 +51,12 @@
   },
   {
     "id": "STRESS-01",
-    "title": "⚠️ TEST: The Logic Wall (Semantic)",
-    "instruction": "Force a logic conflict. Report 'Fire'. Then, at the EXACT same location, report 'Pothole'. (They must NOT merge).",
+    "title": "⚠️ TEST: The Trojan Horse (NLP Conflict)",
+    "instruction": "Report 'Pothole' (Low Priority). Then, at the EXACT same location, report 'Pothole'. But in the description, type: 'EXTREME DANGER HOUSE FIRE HERE'",
     "target": { "lat": 6.7541, "lng": 125.3516 },
-    "zoom": 20,
+    "zoom": 19,
     "required_count": 2,
-    "suggested_category": "Fire",
+    "suggested_category": "Pothole",
     "boundary_radius": 20
   },
   {
@@ -68,5 +68,15 @@
     "required_count": 3,
     "suggested_category": "Pothole",
     "boundary_radius": 350
+  },
+  {
+    "id": "STRESS-03",
+    "title": "⚠️ TEST: The Chain Link (DBSCAN Weakness)",
+    "instruction": "Create a chain of 4 Trash reports spaced evenly apart (15m gap each). Report A -> 15m -> B -> 15m -> C -> 15m -> D. Total span is 45m.",
+    "target": { "lat": 6.7392, "lng": 125.3457 },
+    "zoom": 19,
+    "required_count": 4,
+    "suggested_category": "Trash",
+    "boundary_radius": 100
   }
 ]

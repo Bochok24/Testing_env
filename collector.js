@@ -29,7 +29,10 @@
         // Measurement tool state
         measurementPoints: [],
         measurementLine: null,
-        measurementMarkers: []
+        measurementMarkers: [],
+        // User identification
+        userId: null,
+        userName: null
     };
 
     // =============================================
@@ -59,7 +62,13 @@
         prioritySelect: document.getElementById('prioritySelect'),
         submitBtn: document.getElementById('submitBtn'),
         hintText: document.getElementById('hintText'),
-        toastContainer: document.getElementById('toastContainer')
+        toastContainer: document.getElementById('toastContainer'),
+        // Consent form elements
+        consentModal: document.getElementById('consentModal'),
+        consentCheckbox: document.getElementById('consentCheckbox'),
+        consentAcceptBtn: document.getElementById('consentAcceptBtn'),
+        userIdInput: document.getElementById('userIdInput'),
+        userNameInput: document.getElementById('userNameInput')
     };
 
     // =============================================
@@ -132,6 +141,12 @@
     // Initialize Application
     // =============================================
     async function init() {
+        // Check consent first
+        if (!hasConsented()) {
+            showConsentModal();
+            return;
+        }
+
         try {
             showLoading();
             initMap();
@@ -145,6 +160,86 @@
             showToast('Failed to initialize app. Please refresh.', 'error');
             hideLoading();
         }
+    }
+
+    // =============================================
+    // Consent Management
+    // =============================================
+    function hasConsented() {
+        return localStorage.getItem('citizenlink_consent') === 'true';
+    }
+
+    function showConsentModal() {
+        DOM.consentModal.style.display = 'flex';
+        
+        // Disable checkbox initially
+        DOM.consentCheckbox.disabled = true;
+        const checkboxLabel = DOM.consentCheckbox.parentElement;
+        checkboxLabel.classList.add('disabled');
+        
+        // Get the consent body element
+        const consentBody = document.querySelector('.consent-body');
+        
+        // Function to check if scrolled to bottom
+        function checkScrollPosition() {
+            const scrollTop = consentBody.scrollTop;
+            const scrollHeight = consentBody.scrollHeight;
+            const clientHeight = consentBody.clientHeight;
+            const scrolledToBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+            
+            if (scrolledToBottom) {
+                // Enable checkbox when scrolled to bottom
+                DOM.consentCheckbox.disabled = false;
+                checkboxLabel.classList.remove('disabled');
+                consentBody.classList.add('scrolled');
+                showToast('You can now accept the consent form', 'success');
+                // Remove event listener once enabled
+                consentBody.removeEventListener('scroll', checkScrollPosition);
+            }
+        }
+        
+        // Add scroll event listener
+        consentBody.addEventListener('scroll', checkScrollPosition);
+        
+        // Check initial position (in case content is short enough)
+        setTimeout(() => checkScrollPosition(), 100);
+        
+        // Enable/disable accept button based on checkbox
+        DOM.consentCheckbox.addEventListener('change', function() {
+            DOM.consentAcceptBtn.disabled = !this.checked;
+        });
+
+        // Handle accept button click
+        DOM.consentAcceptBtn.addEventListener('click', acceptConsent);
+    }
+
+    function acceptConsent() {
+        // Validate user identification fields
+        const userId = DOM.userIdInput.value.trim();
+        const userName = DOM.userNameInput.value.trim();
+        
+        if (!userId || !userName) {
+            showToast('Please fill in your Tester ID and Full Name', 'warning');
+            return;
+        }
+        
+        // Store user identification in AppState
+        AppState.userId = userId;
+        AppState.userName = userName;
+        
+        // Save consent and user info to localStorage
+        localStorage.setItem('citizenlink_consent', 'true');
+        localStorage.setItem('citizenlink_consent_timestamp', new Date().toISOString());
+        localStorage.setItem('citizenlink_user_id', userId);
+        localStorage.setItem('citizenlink_user_name', userName);
+
+        // Hide modal with animation
+        DOM.consentModal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+            DOM.consentModal.style.display = 'none';
+            // Initialize the app
+            init();
+        }, 300);
     }
 
     // =============================================
@@ -463,6 +558,10 @@
         const entry = {
             // Unique identifier for this entry
             id: generateUUID(),
+            
+            // User identification
+            user_id: AppState.userId,
+            user_name: AppState.userName,
             
             // Mission tracking (for test purposes)
             _mission_id: mission.id,

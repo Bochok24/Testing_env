@@ -188,6 +188,102 @@
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
+    <!-- Consent Form Modal -->
+    <div id="consentModal" class="consent-modal" style="display: none;">
+        <div class="consent-overlay"></div>
+        <div class="consent-content">
+            <div class="consent-header">
+                <h2>📋 Digital Informed Consent Form</h2>
+                <p class="consent-subtitle">Study Title: Intelligent Incident Reporting System</p>
+            </div>
+            
+            <div class="consent-body">
+                <section class="consent-section">
+                    <h3>1. Statement and Purpose</h3>
+                    <p>You are invited to participate in a research study titled above. The purpose of this study is to validate a web-based incident reporting interface. We are testing the usability of the map plotting system and the accuracy of the manual reporting features under simulated conditions.</p>
+                </section>
+
+                <section class="consent-section">
+                    <h3>2. Participation & Procedure</h3>
+                    <p>Your participation involves acting as a Beta Tester. You will be asked to:</p>
+                    <ul>
+                        <li>Access the web interface on your device.</li>
+                        <li>Manually navigate the map to specific target locations defined in your mission objectives.</li>
+                        <li>Drop pins to mark simulated infrastructure issues (e.g., Potholes, Floods).</li>
+                    </ul>
+                    <p><strong>Duration:</strong> Approximately 20 minutes.</p>
+                </section>
+
+                <section class="consent-section">
+                    <h3>3. Data Collection & Privacy</h3>
+                    <p>For the purpose of system analysis, the application will record:</p>
+                    <ul>
+                        <li><strong>Pin Location:</strong> The specific geographic coordinates (Latitude/Longitude) of the markers you place on the map.</li>
+                        <li><strong>Report Details:</strong> The category and description text you enter.</li>
+                        <li><strong>Timestamps:</strong> The exact time you submit each report.</li>
+                    </ul>
+                    <p class="privacy-note"><strong>Important Privacy Note:</strong> This application does not track your real-time device location or movement history. It only records the specific points you choose to mark on the map. Your personal identity is not stored publicly; you will be identified only by a generic Tester ID in the database.</p>
+                </section>
+
+                <section class="consent-section">
+                    <h3>4. Potential Risks & Benefits</h3>
+                    <p><strong>Risks:</strong> There are no known risks. Participation is virtual via the web interface.</p>
+                    <p><strong>Benefits:</strong> You will help improve a Smart City technology designed to manage urban infrastructure more effectively.</p>
+                </section>
+
+                <section class="consent-section">
+                    <h3>5. Voluntary Participation</h3>
+                    <p>Participation is completely voluntary. You may stop the test or close the browser at any time without penalty.</p>
+                </section>
+
+                <section class="consent-section">
+                    <h3>6. Contact Information</h3>
+                    <p>If you have questions, please contact:</p>
+                    <p><strong>Researcher:</strong> John Dave Maca, Josh Andre Timosan, Pyrrhus Elcid Go<br>
+                    <strong>Adviser:</strong> Dr. Denl M. Vco, LPT (denzzzlmviico@g.cjc.edu.ph)</p>
+                </section>
+
+                <section class="consent-section user-identification">
+                    <h3>7. User Identification</h3>
+                    <p>Please provide your information to help us track test results:</p>
+                    <div class="user-id-fields">
+                        <div class="form-group">
+                            <label for="userIdInput">Tester ID <span class="required">*</span></label>
+                            <input type="text" id="userIdInput" class="form-input" placeholder="e.g., TESTER-001" maxlength="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userNameInput">Full Name <span class="required">*</span></label>
+                            <input type="text" id="userNameInput" class="form-input" placeholder="e.g., John Doe" maxlength="100" required>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="consent-certificate">
+                    <h3>Certificate of Consent</h3>
+                    <p>By clicking the button below, I certify that:</p>
+                    <ul>
+                        <li>I have read the information above.</li>
+                        <li>I understand I will be manually plotting data for simulation purposes.</li>
+                        <li>I voluntarily agree to participate.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="consent-footer">
+                <label class="consent-checkbox-label">
+                    <input type="checkbox" id="consentCheckbox" class="consent-checkbox">
+                    <span>I AGREE TO PARTICIPATE</span>
+                </label>
+                <button id="consentAcceptBtn" class="btn-consent-accept" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    START MISSION
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 

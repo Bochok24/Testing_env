@@ -1,10 +1,11 @@
 # CitizenLink Field Test - Mobile Data Collection Platform
 
-A modern, responsive web application for conducting structured field testing and data collection of citizen complaints. Built with vanilla JavaScript, Leaflet.js for interactive mapping, and a beautiful purple-themed UI with glassmorphism design.
+A modern, responsive web application for conducting structured field testing and data collection of citizen complaints. Built with vanilla JavaScript, Leaflet.js for interactive mapping, and a beautiful purple-themed UI with glassmorphism design. Features an integrated informed consent system for ethical data collection in research studies.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Mobile](https://img.shields.io/badge/mobile-optimized-brightgreen.svg)
+![Research](https://img.shields.io/badge/research-compliant-purple.svg)
 
 ## 📋 Table of Contents
 
@@ -28,7 +29,8 @@ A modern, responsive web application for conducting structured field testing and
 - ↩️ **Undo/Redo** - Complete undo/redo functionality with keyboard shortcuts
 - 💾 **Local Storage** - Persistent data storage for offline capability
 - 📊 **Progress Tracking** - Real-time mission progress visualization
-- 🎯 **5 Field Zones** - Realistic zone-based data collection missions
+- 🎯 **8 Field Zones** - Realistic zone-based data collection missions including stress tests
+- 📋 **Informed Consent** - Digital consent form with scroll-to-enable functionality
 
 ### User Experience
 - 🎨 **Modern UI** - Purple gradient theme with glassmorphism effects
@@ -37,6 +39,7 @@ A modern, responsive web application for conducting structured field testing and
 - 📱 **Touch Optimized** - Large touch targets and gesture support
 - 🔄 **Smooth Animations** - Fluid transitions and micro-interactions
 - 🌐 **Landscape Mode** - Adaptive layout for landscape orientation
+- 🔒 **Privacy-First** - User identification with no real-time tracking
 
 ### Data Collection
 - 7 complaint categories with dynamic subcategories
@@ -45,6 +48,7 @@ A modern, responsive web application for conducting structured field testing and
 - GPS coordinate logging
 - Timestamp tracking
 - Export functionality (JSON/CSV)
+- User identification tracking (Tester ID & Full Name)
 
 ## 🚀 Quick Start
 
@@ -84,12 +88,19 @@ A modern, responsive web application for conducting structured field testing and
 
 ### First Time Setup
 
-1. Grant location permissions when prompted (for optimal experience)
-2. Review the mission list on the main screen
-3. Select a mission to begin field testing
-4. Follow the mission instructions
-5. Click on the map to mark complaint locations
-6. Fill in the complaint form and submit
+1. **Review Informed Consent Form**
+   - Read the Digital Informed Consent Form carefully
+   - Scroll to the bottom to enable the acceptance checkbox
+   - Enter your Tester ID and Full Name
+   - Check the consent agreement box
+   - Click "START MISSION" to begin
+
+2. Grant location permissions when prompted (for optimal experience)
+3. Review the mission list on the main screen
+4. Select a mission to begin field testing
+5. Follow the mission instructions
+6. Click on the map to mark complaint locations
+7. Fill in the complaint form and submit
 
 ## 📁 Project Structure
 
@@ -105,10 +116,10 @@ DATA_COLLECTION/
 
 ### File Descriptions
 
-- **index.html** - Single-page application structure with semantic HTML5
-- **styles.css** - 1400+ lines of modern CSS with mobile optimizations
-- **collector.js** - 1000+ lines of vanilla JavaScript with no dependencies
-- **mission_config.json** - 5 zone-based field missions with boundaries and requirements
+- **index.html** - Single-page application structure with semantic HTML5 and consent modal
+- **styles.css** - 1900+ lines of modern CSS with mobile optimizations and consent form styling
+- **collector.js** - 1200+ lines of vanilla JavaScript with consent management
+- **mission_config.json** - 8 missions including realistic zones and stress test scenarios
 
 ## 🛠️ Technology Stack
 
@@ -207,30 +218,39 @@ Edit CSS variables in `styles.css`:
 
 ### For Testers
 
-1. **Select a Mission**
-   - Open the app and browse available missions
+1. **First-Time Access & Consent**
+   - Open the application in your browser
+   - Read the Digital Informed Consent Form that appears
+   - Scroll through the entire consent document (checkbox will enable once scrolled to bottom)
+   - Enter your **Tester ID** (e.g., TESTER-001)
+   - Enter your **Full Name**
+   - Check the "I AGREE TO PARTICIPATE" checkbox
+   - Click "START MISSION" to begin testing
+
+2. **Select a Mission**
+   - Browse available missions (5 realistic zones + 3 stress tests)
    - Click on a mission card to start
 
-2. **Mark Locations**
+3. **Mark Locations**
    - Click anywhere on the map within the boundary circle
    - A marker will appear at your clicked location
 
-3. **Fill Complaint Form**
+4. **Fill Complaint Form**
    - Enter description (required)
    - Select category and subcategory
    - Choose priority level
    - Click "Submit Complaint"
 
-4. **Track Progress**
+5. **Track Progress**
    - View progress bar showing X/Y complaints
    - Mission completes when target is reached
 
-5. **Undo/Redo**
+6. **Undo/Redo**
    - Use toolbar buttons or keyboard shortcuts:
      - **Undo**: `Ctrl+Z` (Windows) / `Cmd+Z` (Mac)
      - **Redo**: `Ctrl+Shift+Z` or `Ctrl+Y`
 
-6. **Switch Map Layers**
+7. **Switch Map Layers**
    - Click layer buttons (bottom-left corner)
    - Choose between Streets, Satellite, or Terrain
 
@@ -326,16 +346,18 @@ Edit CSS variables in `styles.css`:
 ### Complaint Object
 ```javascript
 {
-  id: "unique-id",
-  missionId: "S-01",
-  timestamp: "2026-01-11T10:30:00.000Z",
+  id: "uuid-v4",
+  user_id: "TESTER-001",
+  user_name: "John Doe",
+  missionId: "REAL-01",
+  timestamp: "2026-01-13T10:30:00.000Z",
   location: {
-    lat: 14.5995,
-    lng: 120.9842
+    lat: 6.7386,
+    lng: 125.3576
   },
   description: "Complaint description",
   category: "Infrastructure",
-  subcategory: "Damaged Roads",
+  subcategory: "Pothole",
   priority: "High"
 }
 ```
@@ -353,8 +375,29 @@ Edit CSS variables in `styles.css`:
 
 **CSV:**
 ```csv
-ID,Mission,Timestamp,Latitude,Longitude,Description,Category,Subcategory,Priority
+ID,User_ID,User_Name,Mission,Timestamp,Latitude,Longitude,Description,Category,Subcategory,Priority
 ```
+
+## 🔒 Privacy & Ethics
+
+### Data Privacy
+- **No Real-Time Tracking**: The application does NOT track your device location or movement history
+- **Manual Pin Drops Only**: Only the specific points you manually mark on the map are recorded
+- **User Identification**: Tester ID and Full Name are stored with submissions for research tracking
+- **Local Storage**: All data is stored locally in your browser until export
+- **Voluntary Participation**: You can stop testing and close the browser at any time
+
+### Research Ethics
+- **Informed Consent**: Digital consent form presented before first use
+- **Scroll-to-Enable**: Must read entire consent form before acceptance
+- **Transparent Data Collection**: Clear explanation of what data is collected and why
+- **Contact Information**: Researcher and adviser details provided in consent form
+
+### Consent Management
+- Consent status stored in browser localStorage
+- Consent timestamp recorded for audit trails
+- Re-opening application remembers consent status
+- Clear browser data to reset consent status
 
 ## 🤝 Contributing
 
@@ -392,6 +435,13 @@ For issues, questions, or suggestions:
 
 ## 🗺️ Roadmap
 
+### Version 1.1.0 ✅ (Current)
+- [x] Digital Informed Consent Form
+- [x] User identification system (Tester ID & Name)
+- [x] Scroll-to-enable consent mechanism
+- [x] Privacy-compliant data collection
+- [x] 8 missions (5 realistic + 3 stress tests)
+
 ### Planned Features
 - [ ] Offline mode with service workers
 - [ ] Photo attachments for complaints
@@ -400,6 +450,27 @@ For issues, questions, or suggestions:
 - [ ] Data analytics and reporting
 - [ ] Multi-language support
 - [ ] Voice input for descriptions
+- [ ] Export consent certificates
+
+## 📜 Version History
+
+### v1.1.0 (2026-01-13)
+- Added Digital Informed Consent Form with research compliance
+- Implemented scroll-to-enable consent mechanism
+- Added user identification (Tester ID & Full Name)
+- Updated data schema to include user identification
+- Added 3 new stress test missions (NLP Conflict, Triple Split, Chain Link)
+- Enhanced privacy documentation
+- Updated mission_config.json with new scenarios
+
+### v1.0.0 (2026-01-11)
+- Initial release
+- 5 realistic zone-based missions
+- Interactive mapping with Leaflet.js
+- Mobile-first responsive design
+- Undo/redo functionality
+- Data export (JSON/CSV)
+- Multiple map layers
 
 ---
 
