@@ -2103,14 +2103,14 @@ body {
 .squad-info h3 {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #0f172a;
     margin: 0;
 }
 
 .squad-info p {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: var(--text-secondary);
+    color: #334155;
     margin: 0;
 }
 
@@ -2126,7 +2126,7 @@ body {
 .squad-missions li {
     font-size: 0.85rem;
     line-height: 1.5;
-    color: var(--text-secondary);
+    color: #475569;
     padding-left: 20px;
     position: relative;
 }
