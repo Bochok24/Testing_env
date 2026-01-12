@@ -53,7 +53,7 @@
     "id": "STRESS-01",
     "title": "⚠️ TEST: The Logic Wall (Semantic)",
     "instruction": "Force a logic conflict. Report 'Fire'. Then, at the EXACT same location, report 'Pothole'. (They must NOT merge).",
-    "target": { "lat": 6.7550, "lng": 125.3500 },
+    "target": { "lat": 6.7541, "lng": 125.3516 },
     "zoom": 20,
     "required_count": 2,
     "suggested_category": "Fire",
@@ -63,10 +63,10 @@
     "id": "STRESS-02",
     "title": "⚠️ TEST: The Triple Split (Spatial)",
     "instruction": "Precision Test: In Bonifacio 1st Street, Report Pothole A. Move map South ~60m -> Pothole B. Move South ~60m -> Pothole C. (Must be 3 pins).",
-    "target": { "lat": 6.7420, "lng": 125.3580 },
+    "target": { "lat": 6.7315, "lng": 125.3622 },
     "zoom": 18,
     "required_count": 3,
     "suggested_category": "Pothole",
-    "boundary_radius": 200
+    "boundary_radius": 350
   }
 ]
