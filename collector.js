@@ -637,7 +637,7 @@
             _entry_number: mission.entriesCollected + 1,
             
             // Required complaint fields (matching DB schema)
-            descriptive_su: description,
+            description: description,
             
             // Location fields
             latitude: AppState.tempLatLng.lat,
@@ -659,7 +659,7 @@
             all_responders_confirmed: false,
             
             // Timestamps
-            submitted_at: new Date().toISOString(),
+            timestamp: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             last_activity_at: new Date().toISOString(),
             
@@ -832,9 +832,9 @@
         
         marker.bindPopup(`
             <strong>${escapeHtml(lastUndo.entry.category)} → ${escapeHtml(lastUndo.entry.subcategory)}</strong><br>
-            <em>${escapeHtml(lastUndo.entry.descriptive_su.substring(0, 50))}${lastUndo.entry.descriptive_su.length > 50 ? '...' : ''}</em><br>
+            <em>${escapeHtml(lastUndo.entry.description.substring(0, 50))}${lastUndo.entry.description.length > 50 ? '...' : ''}</em><br>
             <small>Priority: ${lastUndo.entry.priority}</small><br>
-            <small>${new Date(lastUndo.entry.submitted_at).toLocaleTimeString()}</small>
+            <small>${new Date(lastUndo.entry.timestamp).toLocaleTimeString()}</small>
         `);
         
         AppState.submittedMarkers.push(marker);
@@ -1098,7 +1098,7 @@
     const CATEGORY_SUBCATEGORIES = {
         'Infrastructure': ['Pothole', 'Road Damage', 'Broken Sidewalk', 'Streetlight', 'Damaged Bridge', 'Drainage Issue', 'Others'],
         'Utilities': ['No Water', 'Low Water Pressure', 'Pipe Leak', 'Power Outage', 'Damaged Power Line', 'Internet Issue', 'Others'],
-        'Public Safety': ['Fire', 'Crime', 'Stray Animals', 'Vandalism', 'Unsafe Structure', 'Missing Signage', 'Others'],
+        'Public Safety': ['Fire', 'Crime', 'Stray Animals', 'Vandalism', 'Unsafe Structure', 'Missing Signage', 'Noise Complaint', 'Others'],
         'Sanitation': ['Garbage Collection', 'Illegal Dumping', 'Overflowing Trash', 'Clogged Drain', 'Bad Odor', 'Pest Infestation', 'Others'],
         'Traffic': ['Traffic Light Issue', 'Road Obstruction', 'Illegal Parking', 'Missing Road Signs', 'Traffic Congestion', 'Accident', 'Others'],
         'Environment': ['Flood', 'Fallen Tree', 'Air Pollution', 'Water Pollution', 'Soil Erosion', 'Illegal Burning', 'Others'],

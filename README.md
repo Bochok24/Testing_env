@@ -2,10 +2,11 @@
 
 A modern, responsive web application for conducting structured field testing and data collection of citizen complaints. Built with vanilla JavaScript, Leaflet.js for interactive mapping, and a beautiful purple-themed UI with glassmorphism design. Features an integrated informed consent system and squad-based mission distribution for ethical data collection in research studies.
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Mobile](https://img.shields.io/badge/mobile-optimized-brightgreen.svg)
 ![Research](https://img.shields.io/badge/research-compliant-purple.svg)
+![Last Updated](https://img.shields.io/badge/updated-Jan%202026-orange.svg)
 
 ## 📋 Table of Contents
 
@@ -44,7 +45,7 @@ A modern, responsive web application for conducting structured field testing and
 - 🎯 **Squad-Based Access** - Missions filtered by assigned squad
 
 ### Data Collection
-- 7 complaint categories with dynamic subcategories
+- 7 complaint categories with dynamic subcategories (including Noise Complaint)
 - Priority levels (Low, Medium, High, Critical)
 - Detailed description capture
 - GPS coordinate logging
@@ -371,23 +372,53 @@ Edit CSS variables in `styles.css`:
 
 ## 📊 Data Schema
 
-### Complaint Object
+### Complaint Object (Current Format)
 ```javascript
 {
+  // Identification
   id: "uuid-v4",
   user_id: "TESTER-001",
   user_name: "John Doe",
   squad: "A",
-  missionId: "REAL-01",
-  timestamp: "2026-01-13T10:30:00.000Z",
-  location: {
-    lat: 6.7386,
-    lng: 125.3576
-  },
+  
+  // Mission Tracking
+  _mission_id: "REAL-01",
+  _mission_title: "Zone A: The Deteriorating Highway",
+  _entry_number: 1,
+  
+  // Complaint Data
   description: "Complaint description",
+  latitude: 6.7386,
+  longitude: 125.3576,
   category: "Infrastructure",
   subcategory: "Pothole",
-  priority: "High"
+  
+  // Workflow Fields
+  department_r: [],
+  preferred_departments: [],
+  workflow_status: "new",
+  priority: "low",
+  status: "pending",
+  confirmation_status: "pending",
+  is_duplicate: false,
+  confirmed_by_citizen: false,
+  all_responders_confirmed: false,
+  
+  // Timestamps
+  timestamp: "2026-01-13T10:30:00.000Z",
+  updated_at: "2026-01-13T10:30:00.000Z",
+  last_activity_at: "2026-01-13T10:30:00.000Z",
+  
+  // Metadata
+  _device_info: {
+    userAgent: "...",
+    screenWidth: 1536,
+    screenHeight: 864,
+    pixelRatio: 1.25,
+    platform: "Win32",
+    language: "en-US"
+  },
+  _collected_at: "2026-01-13T10:30:00.000Z"
 }
 ```
 
@@ -407,6 +438,16 @@ Edit CSS variables in `styles.css`:
 ```csv
 ID,User_ID,User_Name,Squad,Mission,Timestamp,Latitude,Longitude,Description,Category,Subcategory,Priority
 ```
+
+### Categories & Subcategories
+
+1. **Infrastructure**: Pothole, Road Damage, Broken Sidewalk, Streetlight, Damaged Bridge, Drainage Issue, Others
+2. **Utilities**: No Water, Low Water Pressure, Pipe Leak, Power Outage, Damaged Power Line, Internet Issue, Others
+3. **Public Safety**: Fire, Crime, Stray Animals, Vandalism, Unsafe Structure, Missing Signage, Noise Complaint, Others
+4. **Sanitation**: Garbage Collection, Illegal Dumping, Overflowing Trash, Clogged Drain, Bad Odor, Pest Infestation, Others
+5. **Traffic**: Traffic Light Issue, Road Obstruction, Illegal Parking, Missing Road Signs, Traffic Congestion, Accident, Others
+6. **Environment**: Flood, Fallen Tree, Air Pollution, Water Pollution, Soil Erosion, Illegal Burning, Others
+7. **Others**: Others
 
 ## 🔒 Privacy & Ethics
 
@@ -471,7 +512,15 @@ For issues, questions, or suggestions:
 
 ## 🗺️ Roadmap
 
-### Version 1.2.0 ✅ (Current)
+### Version 1.3.0 ✅ (Current - January 2026)
+- [x] Updated data schema with standardized field names
+- [x] Changed `descriptive_su` to `description` for clarity
+- [x] Changed `submitted_at` to `timestamp` for consistency
+- [x] Added "Noise Complaint" subcategory to Public Safety
+- [x] Complete database schema alignment
+- [x] Enhanced documentation with full schema details
+
+### Version 1.2.0 ✅
 - [x] Squad selection system (A, B, C)
 - [x] Mission filtering by squad assignment
 - [x] Squad-specific progress tracking
@@ -496,6 +545,14 @@ For issues, questions, or suggestions:
 - [ ] Export consent certificates
 
 ## 📜 Version History
+
+### v1.3.0 (2026-01-13)
+- **Schema Standardization**: Updated data schema field names for consistency
+  - Changed `descriptive_su` to `description` for better clarity
+  - Changed `submitted_at` to `timestamp` for database alignment
+- **Category Enhancement**: Added "Noise Complaint" to Public Safety subcategories
+- **Documentation**: Updated README and DOCUMENTATION with complete schema details
+- **Data Structure**: Aligned collected data with backend database requirements
 
 ### v1.2.0 (2026-01-13)
 - Added squad selection system with three testing groups (A, B, C)

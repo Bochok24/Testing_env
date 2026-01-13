@@ -587,17 +587,39 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 ```json
 [
   {
-    "id": "sub-1",
-    "missionId": "S-01",
-    "timestamp": "2026-01-11T10:30:00.000Z",
-    "location": {
-      "lat": 14.5995,
-      "lng": 120.9842
+    "id": "166acb86-26a2-44a6-925d-c82ca63de4f2",
+    "user_id": "TESTER-001-A",
+    "user_name": "Josh",
+    "squad": "A",
+    "_mission_id": "REAL-02",
+    "_mission_title": "Zone B: The Subdivision Water Outage",
+    "_entry_number": 4,
+    "description": "walang tubig dito sa amin",
+    "latitude": 6.756098613218311,
+    "longitude": 125.3598725795746,
+    "category": "Utilities",
+    "subcategory": "No Water",
+    "department_r": [],
+    "preferred_departments": [],
+    "workflow_status": "new",
+    "priority": "low",
+    "status": "pending",
+    "confirmation_status": "pending",
+    "is_duplicate": false,
+    "confirmed_by_citizen": false,
+    "all_responders_confirmed": false,
+    "timestamp": "2026-01-13T04:56:15.878Z",
+    "updated_at": "2026-01-13T04:56:15.878Z",
+    "last_activity_at": "2026-01-13T04:56:15.878Z",
+    "_device_info": {
+      "userAgent": "Mozilla/5.0...",
+      "screenWidth": 1536,
+      "screenHeight": 864,
+      "pixelRatio": 1.25,
+      "platform": "Win32",
+      "language": "en-US"
     },
-    "description": "Damaged road surface",
-    "category": "Infrastructure",
-    "subcategory": "Damaged Roads",
-    "priority": "High"
+    "_collected_at": "2026-01-13T04:56:15.878Z"
   }
 ]
 ```
@@ -1339,9 +1361,35 @@ performance.measure('submission', 'submission-start', 'submission-end');
 
 ## 📝 Version History
 
-### v1.0.0 (Current)
-- Initial release
-- 12 mission scenarios
+### v1.3.0 (2026-01-13) - Current
+**Schema Standardization & Category Enhancement**
+- Updated data schema field names:
+  - `descriptive_su` → `description` (clarity improvement)
+  - `submitted_at` → `timestamp` (database consistency)
+- Added "Noise Complaint" subcategory to Public Safety
+- Enhanced documentation with complete field definitions
+- Full database schema alignment for backend integration
+- Updated all code references to use standardized field names
+
+### v1.2.0 (2026-01-13)
+**Squad System Implementation**
+- Squad selection system (A, B, C)
+- Mission filtering by squad assignment
+- Squad-specific progress tracking
+- Squad data in exports
+- Beautiful squad selection UI
+
+### v1.1.0 (2026-01-13)
+**Research Compliance & Ethics**
+- Digital Informed Consent Form
+- User identification (Tester ID & Full Name)
+- Scroll-to-enable consent mechanism
+- Privacy-compliant data collection
+- 8 missions (5 realistic + 3 stress tests)
+
+### v1.0.0 (2026-01-11)
+**Initial Release**
+- 5 realistic zone-based missions
 - Mobile-optimized UI
 - Undo/redo functionality
 - Multiple map layers
@@ -1351,15 +1399,10 @@ performance.measure('submission', 'submission-start', 'submission-end');
 
 ### Planned Updates
 
-#### v1.1.0
+#### v1.4.0
 - Offline mode with service workers
 - Photo attachment support
 - Enhanced analytics
-
-#### v1.2.0
-- Multi-user collaboration
-- Admin dashboard
-- Real-time sync
 
 #### v2.0.0
 - Backend API integration
