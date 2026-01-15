@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <meta name="theme-color" content="#6366f1">
-    <meta name="description" content="CitizenLink Field Test - Mobile Data Collection Tool">
-    <title>CitizenLink Field Test</title>
+    <meta name="description" content="CitizenLink SVI - Simulation & Verification Instrument">
+    <title>CitizenLink SVI</title>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
@@ -19,8 +19,14 @@
     <!-- Top Navigation Bar -->
     <header class="top-bar">
         <h1 class="app-title">
-            <span class="icon-logo">📍</span>
-            CitizenLink Field Test
+            <span class="icon-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </span>
+            CitizenLink SVI
         </h1>
         <div class="top-bar-actions">
             <button id="measureBtn" class="btn-icon" aria-label="Measure distance" title="Measure Distance">
@@ -56,7 +62,7 @@
     </header>
 
     <!-- Full-screen Map Container -->
-    <main id="map" class="map-container" role="application" aria-label="Interactive map for data collection"></main>
+    <main id="map" class="map-container" role="application" aria-label="Geofenced verification map for data injection"></main>
 
     <!-- Map Layer Switcher -->
     <div class="map-layer-control" id="mapLayerControl">
@@ -90,32 +96,32 @@
             <span class="handle-bar"></span>
         </div>
 
-        <!-- State A: Mission List View -->
+        <!-- State A: Protocol List View -->
         <section id="missionListView" class="sheet-content">
             <header class="sheet-header">
-                <h2>Available Missions</h2>
-                <span class="mission-counter" id="overallProgress">0 / 15 Complete</span>
+                <h2>Verification Protocols</h2>
+                <span class="mission-counter" id="overallProgress">0 / 8 Complete</span>
             </header>
-            <ul id="missionList" class="mission-list" role="list" aria-label="List of available missions">
+            <ul id="missionList" class="mission-list" role="list" aria-label="List of verification protocols">
                 <!-- Missions populated by JavaScript -->
             </ul>
         </section>
 
-        <!-- State B: Active Mission View -->
+        <!-- State B: Active Protocol View -->
         <section id="activeMissionView" class="sheet-content hidden">
             <header class="sheet-header">
-                <button id="backToList" class="btn-back" aria-label="Back to mission list">
+                <button id="backToList" class="btn-back" aria-label="Back to protocol list">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                 </button>
-                <h2 id="activeMissionTitle">Mission Title</h2>
+                <h2 id="activeMissionTitle">Protocol Title</h2>
             </header>
 
             <div class="mission-details">
-                <!-- Instruction Box -->
+                <!-- Protocol Instructions -->
                 <div class="instruction-box">
-                    <p id="instructionText" class="instruction-text">Instructions will appear here...</p>
+                    <p id="instructionText" class="instruction-text">Protocol instructions will appear here...</p>
                 </div>
 
                 <!-- Progress Indicator -->
@@ -132,7 +138,7 @@
                     <!-- Description Field -->
                     <div class="form-group">
                         <label for="descriptionInput" class="form-label">Description <span class="required">*</span></label>
-                        <textarea id="descriptionInput" class="form-textarea" placeholder="Describe the issue in detail..." rows="3" maxlength="500"></textarea>
+                        <textarea id="descriptionInput" class="form-textarea" placeholder="Enter simulation data as per protocol instructions..." rows="3" maxlength="500"></textarea>
                     </div>
 
                     <!-- Category & Subcategory Row -->
@@ -173,12 +179,12 @@
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
-                        Submit Location
+                        Inject Data Point
                     </button>
 
                     <p class="hint-text" id="hintText">
                         <span class="hint-icon">💡</span>
-                        Tap on the map to place a pin, then submit.
+                        Tap within the geofenced area to place an injection point.
                     </p>
                 </div>
             </div>
@@ -194,24 +200,24 @@
         <div class="consent-content">
             <div class="consent-header">
                 <h2>📋 Digital Informed Consent Form</h2>
-                <p class="consent-subtitle">Study Title: Intelligent Incident Reporting System</p>
+                <p class="consent-subtitle">Study Title: CitizenLink Intelligence Engine Validation</p>
             </div>
             
             <div class="consent-body">
                 <section class="consent-section">
                     <h3>1. Statement and Purpose</h3>
-                    <p>You are invited to participate in a research study titled above. The purpose of this study is to validate a web-based incident reporting interface. We are testing the usability of the map plotting system and the accuracy of the manual reporting features under simulated conditions.</p>
+                    <p>You are invited to participate in a research study titled above. The purpose of this study is to validate the CitizenLink v3.6.3 Intelligence Engine's NLP, Clustering, and Scoring algorithms through controlled data injection scenarios.</p>
                 </section>
 
                 <section class="consent-section">
                     <h3>2. Participation & Procedure</h3>
-                    <p>Your participation involves acting as a Beta Tester. You will be asked to:</p>
+                    <p>Your participation involves acting as a Tester executing verification protocols. You will be asked to:</p>
                     <ul>
-                        <li>Access the web interface on your device.</li>
-                        <li>Manually navigate the map to specific target locations defined in your mission objectives.</li>
-                        <li>Drop pins to mark simulated infrastructure issues (e.g., Potholes, Floods).</li>
+                        <li>Access the Simulation & Verification Instrument (SVI) on your device.</li>
+                        <li>Navigate to geofenced target zones as defined in your protocol assignments.</li>
+                        <li>Inject calibrated data points to stress-test algorithm behavior (e.g., Clustering, NLP Detection).</li>
                     </ul>
-                    <p><strong>Duration:</strong> Approximately 20 minutes.</p>
+                    <p><strong>Duration:</strong> Approximately 20 minutes per group.</p>
                 </section>
 
                 <section class="consent-section">
@@ -227,8 +233,8 @@
 
                 <section class="consent-section">
                     <h3>4. Potential Risks & Benefits</h3>
-                    <p><strong>Risks:</strong> There are no known risks. Participation is virtual via the web interface.</p>
-                    <p><strong>Benefits:</strong> You will help improve a Smart City technology designed to manage urban infrastructure more effectively.</p>
+                    <p><strong>Risks:</strong> There are no known risks. Participation is virtual via the SVI instrument.</p>
+                    <p><strong>Benefits:</strong> You will contribute to validating algorithm accuracy for a Smart City research thesis.</p>
                 </section>
 
                 <section class="consent-section">
@@ -249,7 +255,8 @@
                     <div class="user-id-fields">
                         <div class="form-group">
                             <label for="userIdInput">Tester ID <span class="required">*</span></label>
-                            <input type="text" id="userIdInput" class="form-input" placeholder="e.g., TESTER-001-A" maxlength="50" required>
+                            <input type="text" id="userIdInput" class="form-input" placeholder="TESTER-001-A" pattern="TESTER-\d{3}-[ABC]" maxlength="12" required>
+                            <small class="input-hint">Format: TESTER-###-A/B/C</small>
                         </div>
                         <div class="form-group">
                             <label for="userNameInput">Nickname <span class="required">*</span></label>
@@ -263,8 +270,8 @@
                     <p>By clicking the button below, I certify that:</p>
                     <ul>
                         <li>I have read the information above.</li>
-                        <li>I understand I will be manually plotting data for simulation purposes.</li>
-                        <li>I voluntarily agree to participate.</li>
+                        <li>I understand I will be injecting calibrated data for algorithm verification purposes.</li>
+                        <li>I voluntarily agree to participate in this research validation.</li>
                     </ul>
                 </section>
             </div>
@@ -278,61 +285,61 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    START MISSION
+                    START VERIFICATION
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Squad Selection Modal -->
+    <!-- Group Selection Modal -->
     <div id="squadModal" class="squad-modal" style="display: none;">
         <div class="squad-overlay"></div>
         <div class="squad-content">
             <div class="squad-header">
-                <h2>👥 Select Your Testing Squad</h2>
-                <p class="squad-subtitle">Choose your assigned group to access your missions</p>
+                <h2>🧪 Select Your Testing Group</h2>
+                <p class="squad-subtitle">Choose your assigned group to access your protocols</p>
             </div>
             
             <div class="squad-body">
                 <div class="squad-card" data-squad="A">
-                    <div class="squad-badge">SQUAD A</div>
+                    <div class="squad-badge">GROUP A</div>
                     <div class="squad-info">
-                        <h3>Realistic Scenarios</h3>
-                        <p>4 missions focusing on common urban infrastructure issues</p>
+                        <h3>Baseline Control Protocols</h3>
+                        <p>4 protocols generating standard infrastructure data for baseline clustering validation</p>
                         <ul class="squad-missions">
-                            <li>Zone A: Deteriorating Highway</li>
-                            <li>Zone B: Water Outage</li>
-                            <li>Zone C: Market Day Trash</li>
-                            <li>Zone D: Flood Prone Intersection</li>
+                            <li>Protocol A1: Highway Deterioration</li>
+                            <li>Protocol A2: Utility Outage</li>
+                            <li>Protocol A3: Sanitation Overflow</li>
+                            <li>Protocol A4: Flood Event Simulation</li>
                         </ul>
                     </div>
-                    <button class="btn-squad-select" data-squad="A">SELECT SQUAD A</button>
+                    <button class="btn-squad-select" data-squad="A">SELECT GROUP A</button>
                 </div>
 
                 <div class="squad-card" data-squad="B">
-                    <div class="squad-badge">SQUAD B</div>
+                    <div class="squad-badge">GROUP B</div>
                     <div class="squad-info">
-                        <h3>Stress Tests</h3>
-                        <p>2 missions testing system edge cases and clustering algorithms</p>
+                        <h3>Algorithm Stress Tests</h3>
+                        <p>2 protocols testing DBSCAN clustering and causal chain detection</p>
                         <ul class="squad-missions">
-                            <li>⚠️ Triple Split (Spatial)</li>
-                            <li>⚠️ Chain Link (DBSCAN)</li>
+                            <li>⚠️ Triple Split (Spatial Density)</li>
+                            <li>⚠️ Chain Link (Causal Logic)</li>
                         </ul>
                     </div>
-                    <button class="btn-squad-select" data-squad="B">SELECT SQUAD B</button>
+                    <button class="btn-squad-select" data-squad="B">SELECT GROUP B</button>
                 </div>
 
                 <div class="squad-card" data-squad="C">
-                    <div class="squad-badge">SQUAD C</div>
+                    <div class="squad-badge">GROUP C</div>
                     <div class="squad-info">
-                        <h3>Mixed Scenarios</h3>
-                        <p>2 missions combining realistic and stress test scenarios</p>
+                        <h3>Semantic Conflict Tests</h3>
+                        <p>2 protocols testing NLP filtering and context suppression</p>
                         <ul class="squad-missions">
-                            <li>Zone E: Random Noise (Control)</li>
+                            <li>Random Noise (Control Group)</li>
                             <li>⚠️ Trojan Horse (NLP Conflict)</li>
                         </ul>
                     </div>
-                    <button class="btn-squad-select" data-squad="C">SELECT SQUAD C</button>
+                    <button class="btn-squad-select" data-squad="C">SELECT GROUP C</button>
                 </div>
             </div>
         </div>

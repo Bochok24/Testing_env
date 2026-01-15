@@ -1790,6 +1790,19 @@ body {
     color: #94a3b8;
 }
 
+.user-id-fields .form-input.error {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.user-id-fields .input-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 4px;
+    font-style: italic;
+}
+
 .consent-certificate {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
     padding: 18px 20px;

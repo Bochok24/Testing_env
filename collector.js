@@ -1,9 +1,9 @@
 /**
- * CitizenLink Field Test - Data Collector
- * Mobile-First Data Collection Web Interface
+ * CitizenLink Simulation & Verification Instrument (SVI)
+ * Scenario-Based Data Injection Platform for Algorithm Validation
  * 
- * @author Senior Frontend UX Developer
- * @version 1.0.0
+ * @author Research Team
+ * @version 1.3.0
  */
 
 (function() {
@@ -166,10 +166,10 @@
             bindEvents();
             updateDataBadge();
             hideLoading();
-            showToast('Ready to collect data!', 'success');
+            showToast('SVI initialized. Ready for data injection.', 'success');
         } catch (error) {
             console.error('Initialization error:', error);
-            showToast('Failed to initialize app. Please refresh.', 'error');
+            showToast('Failed to initialize instrument. Please refresh.', 'error');
             hideLoading();
         }
     }
@@ -204,7 +204,7 @@
                 DOM.consentCheckbox.disabled = false;
                 checkboxLabel.classList.remove('disabled');
                 consentBody.classList.add('scrolled');
-                showToast('You can now accept the consent form', 'success');
+                showToast('You may now accept the consent form', 'success');
                 // Remove event listener once enabled
                 consentBody.removeEventListener('scroll', checkScrollPosition);
             }
@@ -227,13 +227,23 @@
 
     function acceptConsent() {
         // Validate user identification fields
-        const userId = DOM.userIdInput.value.trim();
+        const userId = DOM.userIdInput.value.trim().toUpperCase();
         const userName = DOM.userNameInput.value.trim();
         
         if (!userId || !userName) {
-            showToast('Please fill in your Tester ID and Full Name', 'warning');
+            showToast('Please fill in your Tester ID and Nickname', 'warning');
             return;
         }
+        
+        // Validate Tester ID format: TESTER-###-A/B/C
+        const testerIdPattern = /^TESTER-\d{3}-[ABC]$/;
+        if (!testerIdPattern.test(userId)) {
+            showToast('Tester ID must be in format: TESTER-###-A/B/C (e.g., TESTER-001-A)', 'warning');
+            DOM.userIdInput.classList.add('error');
+            return;
+        }
+        
+        DOM.userIdInput.classList.remove('error');
         
         // Store user identification in AppState
         AppState.userId = userId;
@@ -289,12 +299,12 @@
     }
 
     function selectSquad(squad) {
-        // Store squad selection
+        // Store group selection
         AppState.selectedSquad = squad;
         localStorage.setItem('citizenlink_squad', squad);
         localStorage.setItem('citizenlink_squad_timestamp', new Date().toISOString());
 
-        showToast(`Squad ${squad} selected! Loading your missions...`, 'success');
+        showToast(`Group ${squad} selected. Loading protocols...`, 'success');
 
         // Hide modal with animation
         DOM.squadModal.style.animation = 'fadeOut 0.3s ease';
@@ -406,10 +416,10 @@
     // Render Mission List
     // =============================================
     function renderMissionList() {
-        // Filter missions by selected squad
+        // Filter protocols by selected group
         const filteredMissions = AppState.missions.filter(m => m.squad === AppState.selectedSquad);
         const completedCount = filteredMissions.filter(m => m.status === 'completed').length;
-        DOM.overallProgress.textContent = `Squad ${AppState.selectedSquad}: ${completedCount} / ${filteredMissions.length} Complete`;
+        DOM.overallProgress.textContent = `Group ${AppState.selectedSquad}: ${completedCount} / ${filteredMissions.length} Complete`;
 
         DOM.missionList.innerHTML = filteredMissions.map(mission => {
             const missionIndex = filteredMissions.indexOf(mission) + 1;
@@ -500,9 +510,9 @@
 
         // Reset submit button state
         DOM.submitBtn.disabled = true;
-        DOM.hintText.innerHTML = `<span class="hint-icon">💡</span> Tap within the highlighted area (${boundaryRadius}m radius) to place a pin.`;
+        DOM.hintText.innerHTML = `<span class="hint-icon">💡</span> Tap within the geofenced area (${boundaryRadius}m radius) to place an injection point.`;
 
-        showToast(`Mission "${mission.title}" activated`, 'success');
+        showToast(`Protocol "${mission.title}" activated`, 'success');
     }
 
     // =============================================
@@ -537,7 +547,7 @@
 
         // Check if click is within the boundary
         if (clickDistance > boundaryRadius) {
-            showToast(`Please place the pin within the marked area (${boundaryRadius}m radius)`, 'warning');
+            showToast(`Injection point must be within the geofenced area (${boundaryRadius}m radius)`, 'warning');
             return;
         }
 
@@ -584,7 +594,7 @@
 
         // Enable submit button
         DOM.submitBtn.disabled = false;
-        DOM.hintText.innerHTML = '<span class="hint-icon">✓</span> Pin placed! Click "Submit Location" to save.';
+        DOM.hintText.innerHTML = '<span class="hint-icon">✓</span> Injection point placed. Complete the form and click Inject Data Point.';
 
         // Add pulse animation to marker
         const markerElement = AppState.tempMarker.getElement();
@@ -593,7 +603,7 @@
         }
         
         // Update hint text
-        DOM.hintText.innerHTML = '<span class="hint-icon">✓</span> Pin placed! Fill out the form and click Submit.';
+        DOM.hintText.innerHTML = '<span class="hint-icon">✓</span> Injection point placed. Complete the form and submit.';
     }
 
     // =============================================
@@ -601,7 +611,7 @@
     // =============================================
     function submitLocation() {
         if (!AppState.activeMission || !AppState.tempLatLng) {
-            showToast('Please place a pin on the map first', 'warning');
+            showToast('Place an injection point on the map first', 'warning');
             return;
         }
 
@@ -626,14 +636,14 @@
             // Unique identifier for this entry
             id: generateUUID(),
             
-            // User identification
-            user_id: AppState.userId,
-            user_name: AppState.userName,
-            squad: AppState.selectedSquad,
+            // Tester identification
+            tester_id: AppState.userId,
+            tester_name: AppState.userName,
+            group: AppState.selectedSquad,
             
-            // Mission tracking (for test purposes)
-            _mission_id: mission.id,
-            _mission_title: mission.title,
+            // Protocol tracking (for verification purposes)
+            _protocol_id: mission.id,
+            _protocol_title: mission.title,
             _entry_number: mission.entriesCollected + 1,
             
             // Required complaint fields (matching DB schema)
@@ -707,7 +717,7 @@
         AppState.tempMarker = null;
         AppState.tempLatLng = null;
         DOM.submitBtn.disabled = true;
-        DOM.hintText.innerHTML = '<span class="hint-icon">💡</span> Tap on the map to place a pin, then fill out the form.';
+        DOM.hintText.innerHTML = '<span class="hint-icon">💡</span> Tap within the geofenced area to place the next injection point.';
         
         // Clear form for next entry
         DOM.descriptionInput.value = '';
@@ -720,14 +730,14 @@
         // Check if mission is complete
         if (mission.entriesCollected >= mission.required_count) {
             mission.status = 'completed';
-            showToast(`🎉 Mission "${mission.title}" completed!`, 'success');
+            showToast(`✅ Protocol "${mission.title}" verification complete!`, 'success');
             
             // Auto return to list after short delay
             setTimeout(() => {
                 backToMissionList();
             }, 1500);
         } else {
-            showToast(`Entry ${mission.entriesCollected}/${mission.required_count} saved!`, 'success');
+            showToast(`Entry ${mission.entriesCollected}/${mission.required_count} injected`, 'success');
         }
     }
 
@@ -807,7 +817,7 @@
         updateUndoRedoButtons();
         renderMissionList();
         
-        showToast('Entry undone!', 'success');
+        showToast('Entry reverted', 'success');
     }
 
     // =============================================
@@ -869,7 +879,7 @@
         updateUndoRedoButtons();
         renderMissionList();
         
-        showToast('Entry redone!', 'success');
+        showToast('Entry restored', 'success');
     }
 
     // =============================================
@@ -877,7 +887,7 @@
     // =============================================
     function downloadData() {
         if (AppState.collectedData.length === 0) {
-            showToast('No data collected yet!', 'warning');
+            showToast('No data injected yet', 'warning');
             return;
         }
 
@@ -885,10 +895,10 @@
             export_info: {
                 exported_at: new Date().toISOString(),
                 total_entries: AppState.collectedData.length,
-                missions_completed: AppState.missions.filter(m => m.status === 'completed').length,
-                total_missions: AppState.missions.length
+                protocols_completed: AppState.missions.filter(m => m.status === 'completed').length,
+                total_protocols: AppState.missions.length
             },
-            mission_summary: AppState.missions.map(m => ({
+            protocol_summary: AppState.missions.map(m => ({
                 id: m.id,
                 title: m.title,
                 status: m.status,
@@ -910,7 +920,7 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        showToast(`Downloaded ${AppState.collectedData.length} entries!`, 'success');
+        showToast(`Exported ${AppState.collectedData.length} data entries`, 'success');
     }
 
     // =============================================
@@ -1202,7 +1212,7 @@
         DOM.missionList.innerHTML = `
             <div class="loading">
                 <div class="loading-spinner"></div>
-                <span class="loading-text">Loading missions...</span>
+                <span class="loading-text">Loading verification protocols...</span>
             </div>
         `;
     }
@@ -1216,7 +1226,7 @@
         DOM.missionList.innerHTML = `
             <div class="empty-state">
                 <span class="empty-state-icon">📋</span>
-                <h3 class="empty-state-title">No Missions Available</h3>
+                <h3 class="empty-state-title">No Protocols Available</h3>
                 <p class="empty-state-text">${escapeHtml(message)}</p>
             </div>
         `;
