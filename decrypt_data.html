@@ -247,7 +247,20 @@ Paste your private key here...
         });
 
         function updateButtonState() {
-            decryptBtn.disabled = !selectedEncFile || !privateKeyPem || !privateKeyPem.includes('PRIVATE KEY');
+            const hasValidKey = privateKeyPem && (
+                privateKeyPem.includes('PRIVATE KEY') || 
+                privateKeyPem.includes('RSA PRIVATE KEY')
+            );
+            decryptBtn.disabled = !selectedEncFile || !hasValidKey;
+            
+            // Debug logging
+            console.log('Button state:', {
+                hasFile: !!selectedEncFile,
+                hasKey: !!privateKeyPem,
+                keyLength: privateKeyPem ? privateKeyPem.length : 0,
+                hasValidKey: hasValidKey,
+                buttonDisabled: decryptBtn.disabled
+            });
         }
 
         decryptBtn.addEventListener('click', async () => {
