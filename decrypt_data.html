@@ -24,7 +24,7 @@
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             padding: 40px;
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
         }
         h1 {
@@ -56,14 +56,17 @@
         input[type="file"]:hover {
             border-color: #6366f1;
         }
-        input[type="password"] {
+        textarea {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            min-height: 150px;
+            resize: vertical;
         }
-        input[type="password"]:focus {
+        textarea:focus {
             outline: none;
             border-color: #6366f1;
         }
@@ -141,6 +144,35 @@
             font-size: 13px;
             color: #856404;
         }
+        .security-note {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #004085;
+        }
+        .or-divider {
+            text-align: center;
+            margin: 15px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .info-item {
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border-radius: 6px;
+        }
+        .info-item strong {
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -150,20 +182,31 @@
         
         <div class="warning">
             ⚠️ <strong>Confidential:</strong> This tool is for authorized research personnel only. 
-            Keep the decryption password secure.
+            Never share your private key!
+        </div>
+
+        <div class="security-note">
+            🔒 <strong>How it works:</strong> Data is encrypted with RSA + AES hybrid encryption. 
+            Only your private key (private_key.pem) can decrypt the data. The public key in the source code cannot decrypt anything.
         </div>
 
         <div class="form-group">
-            <label for="zipFile">Select ZIP Archive:</label>
-            <input type="file" id="zipFile" accept=".zip">
+            <label for="encFile">Select Encrypted File (.clkdata):</label>
+            <input type="file" id="encFile" accept=".clkdata">
         </div>
 
         <div class="form-group">
-            <label for="password">Decryption Password:</label>
-            <input type="password" id="password" placeholder="Enter the decryption password">
+            <label for="privateKeyFile">Select Private Key File (private_key.pem):</label>
+            <input type="file" id="privateKeyFile" accept=".pem">
+            
+            <div class="or-divider">— OR paste private key below —</div>
+            
+            <textarea id="privateKeyText" placeholder="-----BEGIN PRIVATE KEY-----
+Paste your private key here...
+-----END PRIVATE KEY-----"></textarea>
         </div>
 
-        <button class="btn" id="decryptBtn" disabled>Decrypt Data</button>
+        <button class="btn" id="decryptBtn" disabled>🔓 Decrypt Data</button>
 
         <div class="result" id="result">
             <div class="result-title" id="resultTitle"></div>
@@ -171,72 +214,82 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        const zipFileInput = document.getElementById('zipFile');
-        const passwordInput = document.getElementById('password');
+        const encFileInput = document.getElementById('encFile');
+        const privateKeyFileInput = document.getElementById('privateKeyFile');
+        const privateKeyText = document.getElementById('privateKeyText');
         const decryptBtn = document.getElementById('decryptBtn');
         const resultDiv = document.getElementById('result');
         const resultTitle = document.getElementById('resultTitle');
         const resultContent = document.getElementById('resultContent');
 
-        let selectedFile = null;
+        let selectedEncFile = null;
+        let privateKeyPem = null;
         let decryptedData = null;
 
-        zipFileInput.addEventListener('change', (e) => {
-            selectedFile = e.target.files[0];
+        encFileInput.addEventListener('change', (e) => {
+            selectedEncFile = e.target.files[0];
             updateButtonState();
         });
 
-        passwordInput.addEventListener('input', updateButtonState);
+        privateKeyFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                privateKeyPem = await file.text();
+                privateKeyText.value = privateKeyPem;
+                updateButtonState();
+            }
+        });
+
+        privateKeyText.addEventListener('input', () => {
+            privateKeyPem = privateKeyText.value;
+            updateButtonState();
+        });
 
         function updateButtonState() {
-            decryptBtn.disabled = !selectedFile || !passwordInput.value;
+            decryptBtn.disabled = !selectedEncFile || !privateKeyPem || !privateKeyPem.includes('PRIVATE KEY');
         }
 
         decryptBtn.addEventListener('click', async () => {
-            if (!selectedFile || !passwordInput.value) return;
+            if (!selectedEncFile || !privateKeyPem) return;
 
             decryptBtn.disabled = true;
-            decryptBtn.textContent = 'Decrypting...';
+            decryptBtn.textContent = '🔄 Decrypting...';
 
             try {
-                const zip = new JSZip();
-                const zipContent = await zip.loadAsync(selectedFile);
+                // Read the encrypted file
+                const fileBuffer = await selectedEncFile.arrayBuffer();
+                const fileBytes = new Uint8Array(fileBuffer);
                 
-                // Find the encrypted file
-                let encryptedFile = null;
-                let encryptedFileName = null;
-                
-                for (const [filename, file] of Object.entries(zipContent.files)) {
-                    if (filename.endsWith('.encrypted')) {
-                        encryptedFile = file;
-                        encryptedFileName = filename;
-                        break;
-                    }
+                // Check header
+                const header = new TextDecoder().decode(fileBytes.slice(0, 8));
+                if (header !== 'CLKENC01') {
+                    throw new Error('Invalid file format. This is not a valid CitizenLink encrypted file.');
                 }
-
-                if (!encryptedFile) {
-                    throw new Error('No encrypted data file found in the archive');
-                }
-
-                const encryptedContent = await encryptedFile.async('string');
-                const decrypted = await decryptData(encryptedContent, passwordInput.value);
                 
+                // Get encrypted content (skip 8-byte header)
+                const encryptedBase64 = bytesToBase64(fileBytes.slice(8));
+                
+                // Decrypt
+                const decrypted = await hybridDecrypt(encryptedBase64, privateKeyPem);
                 decryptedData = JSON.parse(decrypted);
+                
+                const testerId = decryptedData.export_info?.tester_id || 'unknown';
                 
                 resultDiv.className = 'result show success';
                 resultTitle.textContent = '✅ Decryption Successful!';
                 
-                const jsonFileName = encryptedFileName.replace('.encrypted', '.json');
                 resultContent.innerHTML = `
-                    <p><strong>Tester ID:</strong> ${decryptedData.export_info?.tester_id || 'N/A'}</p>
-                    <p><strong>Tester Name:</strong> ${decryptedData.export_info?.tester_name || 'N/A'}</p>
-                    <p><strong>Squad:</strong> ${decryptedData.export_info?.squad || 'N/A'}</p>
-                    <p><strong>Total Entries:</strong> ${decryptedData.export_info?.total_entries || 0}</p>
-                    <p><strong>Exported At:</strong> ${decryptedData.export_info?.exported_at || 'N/A'}</p>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>Tester ID:</strong> ${decryptedData.export_info?.tester_id || 'N/A'}</div>
+                        <div class="info-item"><strong>Tester Name:</strong> ${decryptedData.export_info?.tester_name || 'N/A'}</div>
+                        <div class="info-item"><strong>Squad:</strong> ${decryptedData.export_info?.squad || 'N/A'}</div>
+                        <div class="info-item"><strong>Total Entries:</strong> ${decryptedData.export_info?.total_entries || 0}</div>
+                        <div class="info-item"><strong>Protocols Completed:</strong> ${decryptedData.export_info?.protocols_completed || 0}</div>
+                        <div class="info-item"><strong>Exported At:</strong> ${new Date(decryptedData.export_info?.exported_at).toLocaleString() || 'N/A'}</div>
+                    </div>
                     <pre>${JSON.stringify(decryptedData, null, 2)}</pre>
-                    <button class="btn download-btn" onclick="downloadDecrypted('${jsonFileName}')">
+                    <button class="btn download-btn" onclick="downloadDecrypted('${testerId}.json')">
                         📥 Download Decrypted JSON
                     </button>
                 `;
@@ -245,58 +298,88 @@
                 console.error('Decryption error:', error);
                 resultDiv.className = 'result show error';
                 resultTitle.textContent = '❌ Decryption Failed';
-                resultContent.innerHTML = `<p>${error.message}</p><p>Please check the password and try again.</p>`;
+                resultContent.innerHTML = `<p>${error.message}</p><p>Make sure you're using the correct private key and a valid .clkdata file.</p>`;
             } finally {
                 decryptBtn.disabled = false;
-                decryptBtn.textContent = 'Decrypt Data';
+                decryptBtn.textContent = '🔓 Decrypt Data';
             }
         });
 
-        async function decryptData(encryptedBase64, password) {
-            // Decode base64
-            const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+        async function hybridDecrypt(encryptedBase64, privateKeyPem) {
+            const combined = base64ToBytes(encryptedBase64);
             
-            // Extract salt, iv, and encrypted data
-            const salt = combined.slice(0, 16);
-            const iv = combined.slice(16, 28);
-            const encryptedData = combined.slice(28);
+            // Parse the package: [keyLength(2)] + [encryptedAesKey] + [iv(12)] + [encryptedData]
+            const keyLength = (combined[0] << 8) | combined[1];
+            const encryptedAesKey = combined.slice(2, 2 + keyLength);
+            const iv = combined.slice(2 + keyLength, 2 + keyLength + 12);
+            const encryptedData = combined.slice(2 + keyLength + 12);
             
-            // Convert password to key using PBKDF2
-            const encoder = new TextEncoder();
-            const passwordBuffer = encoder.encode(password);
+            // Import RSA private key
+            const rsaPrivateKey = await importRSAPrivateKey(privateKeyPem);
             
-            // Import password as key material
-            const keyMaterial = await crypto.subtle.importKey(
-                'raw',
-                passwordBuffer,
-                'PBKDF2',
-                false,
-                ['deriveKey']
+            // Decrypt AES key with RSA
+            const aesKeyRaw = await crypto.subtle.decrypt(
+                { name: 'RSA-OAEP' },
+                rsaPrivateKey,
+                encryptedAesKey
             );
             
-            // Derive AES key from password
-            const key = await crypto.subtle.deriveKey(
-                {
-                    name: 'PBKDF2',
-                    salt: salt,
-                    iterations: 100000,
-                    hash: 'SHA-256'
-                },
-                keyMaterial,
+            // Import AES key
+            const aesKey = await crypto.subtle.importKey(
+                'raw',
+                aesKeyRaw,
                 { name: 'AES-GCM', length: 256 },
                 false,
                 ['decrypt']
             );
             
-            // Decrypt the data
+            // Decrypt data with AES
             const decryptedBuffer = await crypto.subtle.decrypt(
                 { name: 'AES-GCM', iv: iv },
-                key,
+                aesKey,
                 encryptedData
             );
             
-            const decoder = new TextDecoder();
-            return decoder.decode(decryptedBuffer);
+            return new TextDecoder().decode(decryptedBuffer);
+        }
+        
+        async function importRSAPrivateKey(pemKey) {
+            // Remove PEM header/footer and whitespace
+            const pemContents = pemKey
+                .replace(/-----BEGIN PRIVATE KEY-----/, '')
+                .replace(/-----END PRIVATE KEY-----/, '')
+                .replace(/-----BEGIN RSA PRIVATE KEY-----/, '')
+                .replace(/-----END RSA PRIVATE KEY-----/, '')
+                .replace(/\s/g, '');
+            
+            // Decode base64 to binary
+            const binaryKey = base64ToBytes(pemContents);
+            
+            // Import as CryptoKey
+            return await crypto.subtle.importKey(
+                'pkcs8',
+                binaryKey,
+                { name: 'RSA-OAEP', hash: 'SHA-256' },
+                false,
+                ['decrypt']
+            );
+        }
+        
+        function bytesToBase64(bytes) {
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+        
+        function base64ToBytes(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
         }
 
         function downloadDecrypted(filename) {

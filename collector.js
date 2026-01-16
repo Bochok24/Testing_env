@@ -885,8 +885,18 @@
     // =============================================
     // Download Data
     // =============================================
-    // Password for zip file - KEEP THIS SECRET
-    const ZIP_PASSWORD = 'CitizenLink2026$ecure!';
+    // RSA Public Key for encryption (only YOU have the private key)
+    // This public key can ONLY encrypt - it CANNOT decrypt
+    // Keep private_key.pem SECRET and secure - it's the only way to decrypt data!
+    const RSA_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqxJyAmc17cp0kQk3a65F
+y3N9gw8k1yoVaDKuaa427vNHHSTbSIZ4qmODX2i2xaRA1JiPawkD0ygBE8A3m8Kg
+88199urTY3s6vBU/W/19DivOL/OQ8l7V9pJWV47HFq5fsWE9HgRDIU7sAHREGnxF
+Vxr/iagG0tzSt1t6krsVfXWi6BlJv3evNChYMeLC/447LKs3s6kcDAcxUm9wDK0M
+I6fTEtniRZDZ+g0YuZ1J/0+6XpsJWz54GEEFf19pE+0vR+oSIsTlYO1BOLStRPr8
+QyAiGm/ZHqvrWY7piH9hWO3b/N2zQ5AygawrofGJ9au0q4419m9KcG4QofUWlF+1
+ywIDAQAB
+-----END PUBLIC KEY-----`;
 
     async function downloadData() {
         if (AppState.collectedData.length === 0) {
@@ -932,102 +942,134 @@
         };
 
         try {
-            showToast('Generating secure archive...', 'info');
+            showToast('Encrypting data...', 'info');
 
-            // Create password-protected zip file
-            const zip = new JSZip();
             const jsonContent = JSON.stringify(exportData, null, 2);
-            const jsonFilename = `${sanitizedTesterId}.json`;
             
-            // Add JSON file to zip
-            zip.file(jsonFilename, jsonContent);
+            // Encrypt using hybrid encryption (RSA + AES)
+            const encryptedPackage = await hybridEncrypt(jsonContent);
+            
+            // Create binary blob with custom header
+            const header = new TextEncoder().encode('CLKENC01'); // CitizenLink Encrypted v01
+            const encryptedBytes = base64ToBytes(encryptedPackage);
+            
+            const finalData = new Uint8Array(header.length + encryptedBytes.length);
+            finalData.set(header, 0);
+            finalData.set(encryptedBytes, header.length);
+            
+            const blob = new Blob([finalData], { type: 'application/octet-stream' });
 
-            // Generate zip with password protection
-            // Note: JSZip doesn't support password protection natively,
-            // so we'll use AES encryption on the content
-            const encryptedContent = await encryptData(jsonContent, ZIP_PASSWORD);
-            
-            // Create a zip with encrypted data
-            const secureZip = new JSZip();
-            secureZip.file(`${sanitizedTesterId}.encrypted`, encryptedContent);
-            secureZip.file('README.txt', 'This archive contains encrypted data.\nContact the research administrator for the decryption key.\n\nFile: ' + jsonFilename);
-            
-            const zipBlob = await secureZip.generateAsync({ 
-                type: 'blob',
-                compression: 'DEFLATE',
-                compressionOptions: { level: 9 }
-            });
-
-            // Download the zip file
-            const url = URL.createObjectURL(zipBlob);
+            // Download the encrypted file
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${sanitizedTesterId}_data.zip`;
+            a.download = `${sanitizedTesterId}.clkdata`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showToast(`Exported ${AppState.collectedData.length} data entries securely`, 'success');
+            showToast(`Exported ${AppState.collectedData.length} entries (encrypted)`, 'success');
         } catch (error) {
             console.error('Export error:', error);
-            showToast('Failed to generate secure archive', 'error');
+            showToast('Failed to generate encrypted file', 'error');
         }
     }
 
     // =============================================
-    // Encryption Helper Functions
+    // Hybrid Encryption (RSA + AES)
     // =============================================
-    async function encryptData(data, password) {
-        // Convert password to key using PBKDF2
+    // RSA encrypts a random AES key, AES encrypts the actual data
+    // This allows encrypting large data while using asymmetric encryption
+    
+    async function hybridEncrypt(data) {
         const encoder = new TextEncoder();
-        const passwordBuffer = encoder.encode(password);
         
-        // Generate a random salt
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        
-        // Import password as key material
-        const keyMaterial = await crypto.subtle.importKey(
-            'raw',
-            passwordBuffer,
-            'PBKDF2',
-            false,
-            ['deriveKey']
-        );
-        
-        // Derive AES key from password
-        const key = await crypto.subtle.deriveKey(
-            {
-                name: 'PBKDF2',
-                salt: salt,
-                iterations: 100000,
-                hash: 'SHA-256'
-            },
-            keyMaterial,
+        // Generate random AES-256 key
+        const aesKey = await crypto.subtle.generateKey(
             { name: 'AES-GCM', length: 256 },
-            false,
+            true, // extractable
             ['encrypt']
         );
         
-        // Generate random IV
+        // Export AES key as raw bytes
+        const aesKeyRaw = await crypto.subtle.exportKey('raw', aesKey);
+        
+        // Generate random IV for AES
         const iv = crypto.getRandomValues(new Uint8Array(12));
         
-        // Encrypt the data
+        // Encrypt data with AES
         const dataBuffer = encoder.encode(data);
-        const encryptedBuffer = await crypto.subtle.encrypt(
+        const encryptedData = await crypto.subtle.encrypt(
             { name: 'AES-GCM', iv: iv },
-            key,
+            aesKey,
             dataBuffer
         );
         
-        // Combine salt + iv + encrypted data
-        const combined = new Uint8Array(salt.length + iv.length + encryptedBuffer.byteLength);
-        combined.set(salt, 0);
-        combined.set(iv, salt.length);
-        combined.set(new Uint8Array(encryptedBuffer), salt.length + iv.length);
+        // Import RSA public key
+        const rsaPublicKey = await importRSAPublicKey(RSA_PUBLIC_KEY);
+        
+        // Encrypt AES key with RSA
+        const encryptedAesKey = await crypto.subtle.encrypt(
+            { name: 'RSA-OAEP' },
+            rsaPublicKey,
+            aesKeyRaw
+        );
+        
+        // Package: [encryptedAesKey length (2 bytes)] + [encryptedAesKey] + [iv] + [encryptedData]
+        const keyLengthBytes = new Uint8Array(2);
+        keyLengthBytes[0] = (encryptedAesKey.byteLength >> 8) & 0xff;
+        keyLengthBytes[1] = encryptedAesKey.byteLength & 0xff;
+        
+        const combined = new Uint8Array(
+            2 + encryptedAesKey.byteLength + iv.length + encryptedData.byteLength
+        );
+        
+        let offset = 0;
+        combined.set(keyLengthBytes, offset); offset += 2;
+        combined.set(new Uint8Array(encryptedAesKey), offset); offset += encryptedAesKey.byteLength;
+        combined.set(iv, offset); offset += iv.length;
+        combined.set(new Uint8Array(encryptedData), offset);
         
         // Return as base64
-        return btoa(String.fromCharCode(...combined));
+        return bytesToBase64(combined);
+    }
+    
+    async function importRSAPublicKey(pemKey) {
+        // Remove PEM header/footer and whitespace
+        const pemContents = pemKey
+            .replace(/-----BEGIN PUBLIC KEY-----/, '')
+            .replace(/-----END PUBLIC KEY-----/, '')
+            .replace(/\s/g, '');
+        
+        // Decode base64 to binary
+        const binaryKey = base64ToBytes(pemContents);
+        
+        // Import as CryptoKey
+        return await crypto.subtle.importKey(
+            'spki',
+            binaryKey,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            false,
+            ['encrypt']
+        );
+    }
+    
+    function bytesToBase64(bytes) {
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    }
+    
+    function base64ToBytes(base64) {
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
     }
 
     // =============================================
