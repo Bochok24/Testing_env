@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CitizenLink Data Decryptor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        input[type="file"]:hover {
+            border-color: #6366f1;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .result.success .result-title {
+            color: #155724;
+        }
+        .result.error .result-title {
+            color: #721c24;
+        }
+        pre {
+            background: #1a1a2e;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .download-btn {
+            margin-top: 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 CitizenLink Data Decryptor</h1>
+        <p class="subtitle">Administrator tool for decrypting collected research data</p>
+        
+        <div class="warning">
+            ⚠️ <strong>Confidential:</strong> This tool is for authorized research personnel only. 
+            Keep the decryption password secure.
+        </div>
+
+        <div class="form-group">
+            <label for="zipFile">Select ZIP Archive:</label>
+            <input type="file" id="zipFile" accept=".zip">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Decryption Password:</label>
+            <input type="password" id="password" placeholder="Enter the decryption password">
+        </div>
+
+        <button class="btn" id="decryptBtn" disabled>Decrypt Data</button>
+
+        <div class="result" id="result">
+            <div class="result-title" id="resultTitle"></div>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const zipFileInput = document.getElementById('zipFile');
+        const passwordInput = document.getElementById('password');
+        const decryptBtn = document.getElementById('decryptBtn');
+        const resultDiv = document.getElementById('result');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultContent = document.getElementById('resultContent');
+
+        let selectedFile = null;
+        let decryptedData = null;
+
+        zipFileInput.addEventListener('change', (e) => {
+            selectedFile = e.target.files[0];
+            updateButtonState();
+        });
+
+        passwordInput.addEventListener('input', updateButtonState);
+
+        function updateButtonState() {
+            decryptBtn.disabled = !selectedFile || !passwordInput.value;
+        }
+
+        decryptBtn.addEventListener('click', async () => {
+            if (!selectedFile || !passwordInput.value) return;
+
+            decryptBtn.disabled = true;
+            decryptBtn.textContent = 'Decrypting...';
+
+            try {
+                const zip = new JSZip();
+                const zipContent = await zip.loadAsync(selectedFile);
+                
+                // Find the encrypted file
+                let encryptedFile = null;
+                let encryptedFileName = null;
+                
+                for (const [filename, file] of Object.entries(zipContent.files)) {
+                    if (filename.endsWith('.encrypted')) {
+                        encryptedFile = file;
+                        encryptedFileName = filename;
+                        break;
+                    }
+                }
+
+                if (!encryptedFile) {
+                    throw new Error('No encrypted data file found in the archive');
+                }
+
+                const encryptedContent = await encryptedFile.async('string');
+                const decrypted = await decryptData(encryptedContent, passwordInput.value);
+                
+                decryptedData = JSON.parse(decrypted);
+                
+                resultDiv.className = 'result show success';
+                resultTitle.textContent = '✅ Decryption Successful!';
+                
+                const jsonFileName = encryptedFileName.replace('.encrypted', '.json');
+                resultContent.innerHTML = `
+                    <p><strong>Tester ID:</strong> ${decryptedData.export_info?.tester_id || 'N/A'}</p>
+                    <p><strong>Tester Name:</strong> ${decryptedData.export_info?.tester_name || 'N/A'}</p>
+                    <p><strong>Squad:</strong> ${decryptedData.export_info?.squad || 'N/A'}</p>
+                    <p><strong>Total Entries:</strong> ${decryptedData.export_info?.total_entries || 0}</p>
+                    <p><strong>Exported At:</strong> ${decryptedData.export_info?.exported_at || 'N/A'}</p>
+                    <pre>${JSON.stringify(decryptedData, null, 2)}</pre>
+                    <button class="btn download-btn" onclick="downloadDecrypted('${jsonFileName}')">
+                        📥 Download Decrypted JSON
+                    </button>
+                `;
+
+            } catch (error) {
+                console.error('Decryption error:', error);
+                resultDiv.className = 'result show error';
+                resultTitle.textContent = '❌ Decryption Failed';
+                resultContent.innerHTML = `<p>${error.message}</p><p>Please check the password and try again.</p>`;
+            } finally {
+                decryptBtn.disabled = false;
+                decryptBtn.textContent = 'Decrypt Data';
+            }
+        });
+
+        async function decryptData(encryptedBase64, password) {
+            // Decode base64
+            const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+            
+            // Extract salt, iv, and encrypted data
+            const salt = combined.slice(0, 16);
+            const iv = combined.slice(16, 28);
+            const encryptedData = combined.slice(28);
+            
+            // Convert password to key using PBKDF2
+            const encoder = new TextEncoder();
+            const passwordBuffer = encoder.encode(password);
+            
+            // Import password as key material
+            const keyMaterial = await crypto.subtle.importKey(
+                'raw',
+                passwordBuffer,
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            );
+            
+            // Derive AES key from password
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['decrypt']
+            );
+            
+            // Decrypt the data
+            const decryptedBuffer = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                encryptedData
+            );
+            
+            const decoder = new TextDecoder();
+            return decoder.decode(decryptedBuffer);
+        }
+
+        function downloadDecrypted(filename) {
+            if (!decryptedData) return;
+            
+            const blob = new Blob([JSON.stringify(decryptedData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

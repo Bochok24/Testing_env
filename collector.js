@@ -885,20 +885,43 @@
     // =============================================
     // Download Data
     // =============================================
-    function downloadData() {
+    // Password for zip file - KEEP THIS SECRET
+    const ZIP_PASSWORD = 'CitizenLink2026$ecure!';
+
+    async function downloadData() {
         if (AppState.collectedData.length === 0) {
             showToast('No data injected yet', 'warning');
             return;
         }
 
+        // Check if all missions for the user's squad are completed
+        const userSquadMissions = AppState.missions.filter(m => m.squad === AppState.selectedSquad);
+        const completedMissions = userSquadMissions.filter(m => m.status === 'completed');
+        const incompleteMissions = userSquadMissions.filter(m => m.status !== 'completed');
+
+        if (completedMissions.length < userSquadMissions.length) {
+            const remaining = userSquadMissions.length - completedMissions.length;
+            const incompleteNames = incompleteMissions.map(m => m.title).join(', ');
+            showToast(`Cannot download: ${remaining} mission(s) incomplete. Complete all missions first!`, 'error');
+            console.log('Incomplete missions:', incompleteNames);
+            return;
+        }
+
+        // Get tester ID for filename
+        const testerId = AppState.userId || localStorage.getItem('citizenlink_user_id') || 'UNKNOWN';
+        const sanitizedTesterId = testerId.replace(/[^a-zA-Z0-9-_]/g, '_');
+
         const exportData = {
             export_info: {
+                tester_id: testerId,
+                tester_name: AppState.userName || localStorage.getItem('citizenlink_user_name'),
+                squad: AppState.selectedSquad,
                 exported_at: new Date().toISOString(),
                 total_entries: AppState.collectedData.length,
-                protocols_completed: AppState.missions.filter(m => m.status === 'completed').length,
-                total_protocols: AppState.missions.length
+                protocols_completed: completedMissions.length,
+                total_protocols: userSquadMissions.length
             },
-            protocol_summary: AppState.missions.map(m => ({
+            protocol_summary: userSquadMissions.map(m => ({
                 id: m.id,
                 title: m.title,
                 status: m.status,
@@ -908,19 +931,103 @@
             collected_data: AppState.collectedData
         };
 
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `citizenlink_data_${timestamp}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        try {
+            showToast('Generating secure archive...', 'info');
 
-        showToast(`Exported ${AppState.collectedData.length} data entries`, 'success');
+            // Create password-protected zip file
+            const zip = new JSZip();
+            const jsonContent = JSON.stringify(exportData, null, 2);
+            const jsonFilename = `${sanitizedTesterId}.json`;
+            
+            // Add JSON file to zip
+            zip.file(jsonFilename, jsonContent);
+
+            // Generate zip with password protection
+            // Note: JSZip doesn't support password protection natively,
+            // so we'll use AES encryption on the content
+            const encryptedContent = await encryptData(jsonContent, ZIP_PASSWORD);
+            
+            // Create a zip with encrypted data
+            const secureZip = new JSZip();
+            secureZip.file(`${sanitizedTesterId}.encrypted`, encryptedContent);
+            secureZip.file('README.txt', 'This archive contains encrypted data.\nContact the research administrator for the decryption key.\n\nFile: ' + jsonFilename);
+            
+            const zipBlob = await secureZip.generateAsync({ 
+                type: 'blob',
+                compression: 'DEFLATE',
+                compressionOptions: { level: 9 }
+            });
+
+            // Download the zip file
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${sanitizedTesterId}_data.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(`Exported ${AppState.collectedData.length} data entries securely`, 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            showToast('Failed to generate secure archive', 'error');
+        }
+    }
+
+    // =============================================
+    // Encryption Helper Functions
+    // =============================================
+    async function encryptData(data, password) {
+        // Convert password to key using PBKDF2
+        const encoder = new TextEncoder();
+        const passwordBuffer = encoder.encode(password);
+        
+        // Generate a random salt
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        
+        // Import password as key material
+        const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            passwordBuffer,
+            'PBKDF2',
+            false,
+            ['deriveKey']
+        );
+        
+        // Derive AES key from password
+        const key = await crypto.subtle.deriveKey(
+            {
+                name: 'PBKDF2',
+                salt: salt,
+                iterations: 100000,
+                hash: 'SHA-256'
+            },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['encrypt']
+        );
+        
+        // Generate random IV
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        
+        // Encrypt the data
+        const dataBuffer = encoder.encode(data);
+        const encryptedBuffer = await crypto.subtle.encrypt(
+            { name: 'AES-GCM', iv: iv },
+            key,
+            dataBuffer
+        );
+        
+        // Combine salt + iv + encrypted data
+        const combined = new Uint8Array(salt.length + iv.length + encryptedBuffer.byteLength);
+        combined.set(salt, 0);
+        combined.set(iv, salt.length);
+        combined.set(new Uint8Array(encryptedBuffer), salt.length + iv.length);
+        
+        // Return as base64
+        return btoa(String.fromCharCode(...combined));
     }
 
     // =============================================
